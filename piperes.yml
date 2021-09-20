@@ -19,4 +19,4 @@ pipelines:
             - echo "executing onStart"
            onExecute:
              - echo "executing onExecute"
-             - pushd $gitresource_resourcePath
+             - pushd $res_gitresource_resourcePath
