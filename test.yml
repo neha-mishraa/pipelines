@@ -1,10 +1,22 @@
+resources:
+  - name: gitresource
+    type: GitRepo
+    configuration:
+      gitProvider: github_nehan
+      path: neha-mishraa/pipelines
+      buildOn:
+         commit: true
 pipelines:
-  - name: test_Pipeline
+  - name: testPipelineRel
     steps:
-      - name: testBashStep
+      - name: testStep
         type: Bash
-#         configuration:
-#           nodePool: dynamic_u16
+        configuration:
+          inputResources:
+            - name: gitresource
         execution:
-          onExecute:
-            - echo "hello"
+           onStart:
+            - echo "executing onStart"
+           onExecute:
+             - echo "executing onExecute"
+             - pushd $gitresource_resourcePath
