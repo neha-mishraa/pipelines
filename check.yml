@@ -23,7 +23,7 @@ resources:
   - name: gitresource
     type: GitRepo
     configuration:
-      gitProvider: github_neham
+      gitProvider: github_neha
       path: neha-mishraa/pipelines
       buildOn:
          commit: true
