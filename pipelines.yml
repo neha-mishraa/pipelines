@@ -1,0 +1,30 @@
+resources:
+ - name: resource_pipelines
+   type: GitRepo
+   configuration:
+     gitProvider: github_neha
+     path: neha-mishraa/pipelines
+     files: 
+       include: ^README.md$
+     branches:
+       include: ^{{gitBranch}}$
+
+pipelines:
+  - name: myPipeline
+    steps:
+      - name: myStep
+        type: Bash
+        configuration:
+         inputResources: 
+           - name: resource_pipelines
+         integrations:
+           - name: github_neha
+        execution:
+          onExecute:
+            - printenv
+            - pushd $res_resource_pipelines_resourcePath
+            - ls
+            - echo "hi"
+          onSuccess:
+            - pushd $res_resource_pipelines_resourcePath
+            - ls
