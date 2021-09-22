@@ -1,5 +1,5 @@
 resources:
- - name: resource_pipelines1245
+ - name: resource_pipelines
    type: GitRepo
    configuration:
      gitProvider: github_neha
@@ -14,23 +14,23 @@ resources:
 #        pullRequestUpdate: true
 
 pipelines:
-  - name: testing_123
+  - name: testing
     steps:
-      - name: myStep112
+      - name: myStep
         type: Bash
         configuration:
          inputResources: 
-           - name: resource_pipelines1245
+           - name: resource_pipelines
          integrations:
            - name: github_neha
         execution:
           onExecute:
             - printenv
-            - pushd $res_resource_pipelines1245_resourcePath
+            - pushd $res_resource_pipelines_resourcePath
             - ls
             - echo "hi"
           onSuccess:
-            - pushd $res_resource_pipelines1245_resourcePath
+            - pushd $res_resource_pipelines_resourcePath
             - ls
 
 
