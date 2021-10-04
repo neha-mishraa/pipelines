@@ -18,6 +18,8 @@ pipelines:
             - df -h
             - fallocate -l 5G huge_file.dat2
             - df -h
+            - fallocate -l 5G huge_file.dat2
+            - df -h
             - fallocate -l 2G huge_file.dat3
             - df -h
 #             - fallocate -l 10G huge_file.dat4
