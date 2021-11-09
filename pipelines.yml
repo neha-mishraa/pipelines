@@ -18,7 +18,7 @@ pipelines:
     steps:
       - name: myStep
         type: Bash
-        configuration:
+#         configuration:
 #          nodePool: dynamic_aws
          inputResources: 
            - name: resource_pipelines
