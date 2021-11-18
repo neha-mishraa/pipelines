@@ -6,6 +6,10 @@ resources:
       path: neha-mishraa/pipelines
       buildOn:
          commit: true
+         pullRequestCreate: true
+         pullRequestClose: true
+         releaseCreate: true
+         tagCreate: true
 pipelines:
   - name: testPipelineRel
     steps:
@@ -18,6 +22,5 @@ pipelines:
            onStart:
             - echo "executing onStart"
            onExecute:
-             - echo "executing onExecute"
              - echo "executing onExecute"
              - pushd $res_gitresource_resourcePath
