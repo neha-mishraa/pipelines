@@ -8,8 +8,8 @@
 ####################################
 pipelines:
   - name: testpipeline
-#     configuration:
-#       nodePool: u16StaticNP
+    configuration:
+      nodePool: nodetestP1forP2
     steps:
       - name: testStep
         type: Bash
