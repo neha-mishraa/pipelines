@@ -1,6 +1,6 @@
 
 resources:
-  - name: cron_trigger_1
+  - name: cr
     type: CronTrigger
     configuration:
       interval: '*/5 * * * *' # Every 5 minutes
@@ -14,7 +14,7 @@ pipelines:
           runtime:
             type: host
           inputResources:
-            - name: cron_trigger_1
+            - name: cr
         execution:
           onExecute:
             - echo hi
