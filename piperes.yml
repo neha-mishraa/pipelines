@@ -1,8 +1,8 @@
 resources:
-  - name: gitresourcenm
+  - name: gitpiperes
     type: GitRepo
     configuration:
-      gitProvider: github_nm
+      gitProvider: github_neha
       path: neha-mishraa/pipelines
       buildOn:
          commit: true
@@ -11,16 +11,16 @@ resources:
          releaseCreate: true
          tagCreate: true
 pipelines:
-  - name: testPipelineRel
+  - name: piperes
     steps:
-      - name: testStep
+      - name: piperes
         type: Bash
         configuration:
           inputResources:
-            - name: gitresourcenm
+            - name: gitpiperes
         execution:
            onStart:
             - echo "executing onStart"
            onExecute:
              - echo "executing onExecute"
-             - pushd $res_gitresourcenm_resourcePath
+             - pushd $res_gitpiperes_resourcePath
