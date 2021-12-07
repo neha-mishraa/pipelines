@@ -1,0 +1,20 @@
+
+resources:
+  - name: cron_trigger_1
+    type: CronTrigger
+    configuration:
+      interval: '*/5 * * * *' # Every 5 minutes
+
+pipelines:
+  - name: testcron_pipeline
+    steps:
+      - name: basicTest
+        type: Bash
+        configuration:
+          runtime:
+            type: host
+          inputResources:
+            - name: cron_trigger_1
+        execution:
+          onExecute:
+            - echo hi
