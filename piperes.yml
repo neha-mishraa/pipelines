@@ -12,6 +12,8 @@ resources:
          tagCreate: true
 pipelines:
   - name: piperes
+    configuration:
+      nodePool: u16dynamic
     steps:
       - name: piperes
         type: Bash
