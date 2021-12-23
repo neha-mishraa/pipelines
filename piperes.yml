@@ -11,7 +11,7 @@ resources:
          releaseCreate: true
          tagCreate: true
 pipelines:
-  - name: piperes
+  - name: pipeResTest
     configuration:
       nodePool: u16dynamic
     steps:
