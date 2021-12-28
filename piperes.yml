@@ -2,7 +2,7 @@ resources:
   - name: gitpiperes
     type: GitRepo
     configuration:
-      gitProvider: github_neha_dup
+      gitProvider: github_neha
       path: neha-mishraa/pipelines
       buildOn:
          commit: true
@@ -13,7 +13,7 @@ resources:
 pipelines:
   - name: pipeResTest
     configuration:
-      nodePool: u16dynamic
+      nodePool: azuredynamic_c7
     steps:
       - name: piperes
         type: Bash
