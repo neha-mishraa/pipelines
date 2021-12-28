@@ -13,7 +13,7 @@ resources:
 pipelines:
   - name: pipeResTest
     configuration:
-      nodePool: c8dynamic
+      nodePool: azuredynamic_c7
     steps:
       - name: piperes
         type: Bash
