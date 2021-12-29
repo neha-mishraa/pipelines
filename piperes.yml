@@ -12,8 +12,8 @@ resources:
          tagCreate: true
 pipelines:
   - name: pipeResTest
-    configuration:
-      nodePool: azuredynamic_c7
+#     configuration:
+#       nodePool: azuredynamic_c7
     steps:
       - name: piperes
         type: Bash
