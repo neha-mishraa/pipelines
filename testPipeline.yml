@@ -1,9 +1,9 @@
-# resources:
-#   - name: git_resc
-#     type: gitRepo
-#     configuration:
-#       gitProvider: github_neha
-#       path: neha-mishraa/pipelines
+resources:
+  - name: git_resc
+    type: gitRepo
+    configuration:
+      gitProvider: github_neha
+      path: neha-mishraa/pipelines
 
 ####################################
 pipelines:
@@ -17,6 +17,7 @@ pipelines:
           onStart:
             - echo "executing onStart"
           onExecute:
+            - pushd $res_git_resc_resourcePath
 #             - echo "executing onExecute"
             - sleep 5s
 
