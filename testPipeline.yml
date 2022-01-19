@@ -1,15 +1,15 @@
-resources:
-  - name: git_resc
-    type: gitRepo
-    configuration:
-      gitProvider: github_neha
-      path: neha-mishraa/pipelines
+# resources:
+#   - name: git_resc
+#     type: gitRepo
+#     configuration:
+#       gitProvider: github_neha
+#       path: neha-mishraa/pipelines
 
 ####################################
 pipelines:
   - name: testpipeline
-    configuration:
-      nodePool: default_u18
+#     configuration:
+#       nodePool: default_u18
     steps:
       - name: testStep
         type: Bash
