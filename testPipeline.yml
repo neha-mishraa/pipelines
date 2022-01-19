@@ -9,7 +9,7 @@
 pipelines:
   - name: testpipeline
     configuration:
-      nodePool: first_DNP
+      nodePool: default_u18
     steps:
       - name: testStep
         type: Bash
