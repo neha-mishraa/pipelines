@@ -19,7 +19,7 @@ pipelines:
           onExecute:
 #             - pushd $res_git_resc_resourcePath
             - echo "executing onExecute"
-#             - sleep 5s
+            - sleep 500s
 
 ####################################
 # pipelines:
