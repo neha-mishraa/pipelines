@@ -1,0 +1,24 @@
+pipelines:
+  - name: test
+    steps:     
+      - name: triggerAG
+        type: Bash
+        execution:
+          onExecute:
+            - echo "Hello World"
+  
+      - name: TL_approval_gate
+        type: Bash
+        configuration:
+          inputSteps:
+            - name: triggerAG
+              status:
+                - success
+          requiresApproval:
+            approvers:
+              - neham
+            notifications:
+              - integrationName: slack
+        execution:
+          onExecute:
+            - echo "Hello World"
