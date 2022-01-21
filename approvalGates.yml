@@ -1,17 +1,28 @@
 pipelines:
   - name: test
     steps:     
-      - name: triggerAG
+      - name: triggerAG1
         type: Bash
         execution:
           onExecute:
             - echo "Hello World"
   
-      - name: TL_approval_gate
+      - name: triggerAG2
         type: Bash
         configuration:
           inputSteps:
-            - name: triggerAG
+            - name: triggerAG1
+              status:
+                - success
+        execution:
+          onExecute:
+            - echo "Hello World"
+  
+      - name: Approval_gate
+        type: Bash
+        configuration:
+          inputSteps:
+            - name: triggerAG2
               status:
                 - success
           requiresApproval:
