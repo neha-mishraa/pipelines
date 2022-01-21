@@ -28,8 +28,8 @@ pipelines:
           requiresApproval: false
 #             approvers:
 #               - neham
-            notifications:
-              - integrationName: slack
+#             notifications:
+#               - integrationName: slack
         execution:
           onExecute:
             - echo "Hello World"
