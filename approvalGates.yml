@@ -25,7 +25,7 @@ pipelines:
             - name: triggerAG2
               status:
                 - success
-          requiresApproval:
+          requiresApproval: false
             approvers:
               - neham
             notifications:
