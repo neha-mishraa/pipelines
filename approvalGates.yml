@@ -26,8 +26,8 @@ pipelines:
               status:
                 - success
           requiresApproval: false
-            approvers:
-              - neham
+#             approvers:
+#               - neham
             notifications:
               - integrationName: slack
         execution:
