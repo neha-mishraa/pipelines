@@ -15,7 +15,7 @@ pipelines:
         type: Bash
         execution:
           onStart:
-            - echo "executing onStart!"
+            - echo "executing onStart"
           onExecute:
 #             - pushd $res_git_resc_resourcePath
             - echo "executing onExecute"
