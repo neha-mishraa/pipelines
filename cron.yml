@@ -3,7 +3,7 @@ resources:
   - name: cr
     type: CronTrigger
     configuration:
-      interval: '*/5 * * * *' # Every 5 minutes
+      interval: '*/5 * * * *' # Every 5 mins
 
 pipelines:
   - name: testcron_pipeline
