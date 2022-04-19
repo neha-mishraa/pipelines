@@ -9,7 +9,7 @@
 pipelines:
   - name: testpipeline
     configuration:
-      nodePool: k8su18
+      nodePool: amnbsdma
     steps:
       - name: testStep
         type: Bash
