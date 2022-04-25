@@ -2,7 +2,7 @@ resources:
   - name: gitpiperes
     type: GitRepo
     configuration:
-      gitProvider: default_github_neha
+      gitProvider: github_neha
       path: neha-mishraa/pipelines
       buildOn:
          commit: true
