@@ -12,8 +12,8 @@ resources:
          tagCreate: true
 pipelines:
   - name: pipeResTest
-    configuration:
-      nodePool: default_u18
+#     configuration:
+#       nodePool: default_u18
     steps:
       - name: piperes
         type: Bash
