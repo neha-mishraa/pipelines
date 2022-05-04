@@ -8,8 +8,8 @@
 ####################################
 pipelines:
   - name: testpipeline
-    configuration:
-      nodePool: NP_DyNodeK8s_0001
+#     configuration:
+#       nodePool: NP_DyNodeK8s_0001
     steps:
       - name: testStep
         type: Bash
