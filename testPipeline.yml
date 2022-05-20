@@ -8,8 +8,8 @@
 ####################################
 pipelines:
   - name: testpipeline
-#     configuration:
-#       nodePool: NP_DyNodeK8s_0001
+    configuration:
+      nodePool: u18k8sdynamic_6080
     steps:
       - name: testStep
         type: Bash
