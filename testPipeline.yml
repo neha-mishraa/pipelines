@@ -7,7 +7,7 @@
 
 ####################################
 pipelines:
-  - name: testpipeline
+  - name: SCMPipelineSource
 #     configuration:
 #       nodePool: u18k8sdynamic_6080
     steps:
