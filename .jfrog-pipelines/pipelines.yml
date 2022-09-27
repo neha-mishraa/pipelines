@@ -19,12 +19,14 @@ pipelines:
            - name: resource_pipelines
          integrations:
            - name: github_neham
+           - name: slackTest
         execution:
           onExecute:
             - printenv
             - pushd $res_resource_pipelines_resourcePath
             - ls
             - echo "hi"
+            - send_notification slackTest --text "Pipeline test"
           onSuccess:
             - pushd $res_resource_pipelines_resourcePath
             - ls
