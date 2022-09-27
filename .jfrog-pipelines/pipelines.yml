@@ -2,7 +2,7 @@ resources:
  - name: resource_pipelines
    type: GitRepo
    configuration:
-     gitProvider: github_neha
+     gitProvider: github_neham
      path: neha-mishraa/pipelines
      files: 
        include: ^README.md$
@@ -18,7 +18,7 @@ pipelines:
          inputResources: 
            - name: resource_pipelines
          integrations:
-           - name: github_neha
+           - name: github_neham
         execution:
           onExecute:
             - printenv
