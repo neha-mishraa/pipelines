@@ -32,3 +32,4 @@ pipelines:
           onSuccess:
             - pushd $res_resource_pipelines_resourcePath
             - ls
+
