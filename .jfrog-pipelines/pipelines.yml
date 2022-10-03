@@ -24,7 +24,7 @@ pipelines:
 #            - name: slackTest
         execution:
           onExecute:
-            - printenv
+#             - printenv
             - pushd $res_resource_pipelines_resourcePath
             - ls
             - echo "hi"
@@ -32,4 +32,3 @@ pipelines:
           onSuccess:
             - pushd $res_resource_pipelines_resourcePath
             - ls
-
