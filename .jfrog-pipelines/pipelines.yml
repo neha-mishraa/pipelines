@@ -8,6 +8,8 @@ resources:
        include: ^README.md$
      branches:
        include: ^{{gitBranch}}$
+     buildOn:
+       commit: true
 
 pipelines:
   - name: testing
