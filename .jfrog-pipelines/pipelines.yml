@@ -5,9 +5,9 @@ resources:
      gitProvider: github_neham
      path: neha-mishraa/pipelines
      files: 
-       include: ^README.md$
+       include: .* #^README.md$
      branches:
-       include: ^{{gitBranch}}$
+       include: master #^{{gitBranch}}$
      buildOn:
        commit: true
 
