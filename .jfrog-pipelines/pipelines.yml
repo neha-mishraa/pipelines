@@ -12,9 +12,9 @@ resources:
 #        commit: true
 
 pipelines:
-  - name: testing
+  - name: testing1
     steps:
-      - name: myStep
+      - name: myStep1
         type: Bash
         configuration:
          inputResources: 
@@ -35,3 +35,21 @@ pipelines:
 #           onSuccess:
 #             - pushd $res_resource_pipelines_resourcePath
 #             - ls
+
+  - name: testing2
+    steps:
+      - name: myStep2
+        type: Bash
+        configuration:
+         integrations:
+           - name: github_neha
+        execution:
+          onExecute:
+            - echo "hi"
+   - name: testing3
+    steps:
+      - name: myStep3
+        type: Bash
+        execution:
+          onExecute:
+            - echo "hi"
