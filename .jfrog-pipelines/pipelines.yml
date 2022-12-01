@@ -18,15 +18,14 @@ pipelines:
         type: Bash
         configuration:
          environmentVariables:
-          readOnly:
-            DEFAULT_UBUNTU_NODEPOOL_OS:
-              allowCustom: true
-              default: "Ubuntu_18.04"
-              description: "Default operating system for node pool tests"
-            DEFAULT_NODEPOOL_NUMBEROFNODES:
-              allowCustom: true
-              default: 1
-              description: "Default number of nodes for node pool tests"
+           DEFAULT_UBUNTU_NODEPOOL_OS:
+             allowCustom: true
+             default: "Ubuntu_18.04"
+             description: "Default operating system for node pool tests"
+           DEFAULT_NODEPOOL_NUMBEROFNODES:
+             allowCustom: true
+             default: 1
+             description: "Default number of nodes for node pool tests"
          inputResources: 
            - name: resource_pipelines
          integrations:
