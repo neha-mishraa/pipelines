@@ -73,22 +73,22 @@
 
 
 resources:
-  - name: R_CronTrigger_7567_0005_resource
+  - name: R_CronTrigger_resource
     type: CronTrigger
     configuration:
       interval: "* * * * *"
-      branches:
-        include: "^master$"
-        exclude: "^test$"
+#       branches:
+#         include: "^master$"
+#         exclude: "^test$"
 
 pipelines:
-  - name: R_CronTrigger_7567_0005
+  - name: R_CronTrigger_pipe
     steps:
-      - name: R_CronTrigger_7567_0005_1
+      - name: R_CronTrigger_step
         type: Bash
         configuration:
           inputResources:
-            - name: R_CronTrigger_7567_0005_resource
+            - name: R_CronTrigger_resource
         execution:
           onExecute:
             - echo hello
