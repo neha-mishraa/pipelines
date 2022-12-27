@@ -72,23 +72,101 @@
 #             - echo "hi"
 
 
+# resources:
+#   - name: R_CronTrigger_resource
+#     type: CronTrigger
+#     configuration:
+#       interval: "* * * * *"
+# #       branches:
+# #         include: "^master$"
+# #         exclude: "^test$"
+
+# pipelines:
+#   - name: R_CronTrigger_pipe
+#     steps:
+#       - name: R_CronTrigger_step
+#         type: Bash
+#         configuration:
+#           inputResources:
+#             - name: R_CronTrigger_resource
+#         execution:
+#           onExecute:
+#             - echo hello
+
 resources:
-  - name: R_CronTrigger_resource
-    type: CronTrigger
+  - name: connecting_resource_node_test
+    type: PropertyBag
     configuration:
-      interval: "* * * * *"
-#       branches:
-#         include: "^master$"
-#         exclude: "^test$"
+      key1: value1
+      key2: value2
 
 pipelines:
-  - name: R_CronTrigger_pipe
+  - name: node_test_
     steps:
-      - name: R_CronTrigger_step
+      - name: nodeTestStep
         type: Bash
         configuration:
-          inputResources:
-            - name: R_CronTrigger_resource
+          nodePool: u18dynamic
+          outputResources: 
+            - name: connecting_resource_node_test
+#               trigger: false
+          integrations:
+            - name: github_neha
         execution:
           onExecute:
-            - echo hello
+            - write_output connecting_resource_node_test "test=value"
+
+      - name: c7dynamic
+        type: Bash
+        configuration:
+          nodePool: c7dynamic
+          inputResources:
+            - name: connecting_resource_node_test
+        execution:
+          onExecute:
+            - printenv
+            - docker images
+            
+      - name: u20dynamic
+        type: Bash
+        configuration:
+          nodePool: u20dynamic
+          inputResources:
+            - name: connecting_resource_node_test
+        execution:
+          onExecute:
+            - printenv
+            - docker images
+            
+      - name: r8dynamic
+        type: Bash
+        configuration:
+          nodePool: r8dynamic
+          inputResources:
+            - name: connecting_resource_node_test
+        execution:
+          onExecute:
+            - printenv
+            - docker images
+            
+      - name: r7dynamic
+        type: Bash
+        configuration:
+          nodePool: r7dynamic
+          inputResources:
+            - name: connecting_resource_node_test
+        execution:
+          onExecute:
+            - printenv
+            - docker images
+
+      - name: win_2019
+        type: PowerShell
+        configuration:
+          nodePool: win_2019
+          inputResources:
+            - name: connecting_resource_node_test
+        execution:
+          onExecute:
+            - write-output "Hi"
+            - docker images
