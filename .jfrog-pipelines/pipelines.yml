@@ -137,28 +137,6 @@ pipelines:
           onExecute:
             - printenv
             - docker images
-            
-      - name: r8dynamic
-        type: Bash
-        configuration:
-          nodePool: r8dynamic
-          inputResources:
-            - name: connecting_resource_node_test
-        execution:
-          onExecute:
-            - printenv
-            - docker images
-            
-      - name: r7dynamic
-        type: Bash
-        configuration:
-          nodePool: r7dynamic
-          inputResources:
-            - name: connecting_resource_node_test
-        execution:
-          onExecute:
-            - printenv
-            - docker images
 
       - name: win_2019
         type: PowerShell
