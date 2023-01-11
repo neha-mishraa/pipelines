@@ -1,75 +1,75 @@
-# resources:
-#  - name: resource_pipelines
-#    type: GitRepo
-#    configuration:
-#      gitProvider: github_neha
-#      path: neha-mishraa/pipelines
-#      files: 
-#        include: ^README.md$
-#      branches:
-#        include: ^{{gitBranch}}$
-# #      buildOn:
-# #        commit: true
+resources:
+ - name: resource_pipelines
+   type: GitRepo
+   configuration:
+     gitProvider: github_neha
+     path: neha-mishraa/pipelines
+     files: 
+       include: ^README.md$
+     branches:
+       include: ^{{gitBranch}}$
+#      buildOn:
+#        commit: true
 
-# pipelines:
-#   - name: testing1
-#     steps:
-#       - name: myStep1
-#         type: Bash
-#         configuration:
-#          environmentVariables:
-#            DEFAULT_UBUNTU_NODEPOOL_OS:
-#              allowCustom: true
-#              default: "Ubuntu_18.04"
-#              description: "Default operating system for node pool tests"
-#            DEFAULT_NODEPOOL_NUMBEROFNODES:
-#              allowCustom: true
-#              default: 1
-#              description: "Default number of nodes for node pool tests"
-#            DEFAULT_UBUNTU_NODEPOOL_OS_1:
-#              allowCustom: true
-#              default: "Ubuntu_18.04"
-#              description: "Default operating system for node pool tests"
-#            DEFAULT_NODEPOOL_NUMBEROFNODES_1:
-#              allowCustom: true
-#              default: 1
-#              description: "Default number of nodes for node pool tests"
-#          inputResources: 
-#            - name: resource_pipelines
-#          integrations:
-#            - name: github_neha
-# #            - name: slackTest
-# #            - name: smtpNotification
-#         execution:
-#           onExecute:
-# #             - printenv
+pipelines:
+  - name: testing1
+    steps:
+      - name: myStep1
+        type: Bash
+        configuration:
+         environmentVariables:
+           DEFAULT_UBUNTU_NODEPOOL_OS:
+             allowCustom: true
+             default: "Ubuntu_18.04"
+             description: "Default operating system for node pool tests"
+           DEFAULT_NODEPOOL_NUMBEROFNODES:
+             allowCustom: true
+             default: 1
+             description: "Default number of nodes for node pool tests"
+           DEFAULT_UBUNTU_NODEPOOL_OS_1:
+             allowCustom: true
+             default: "Ubuntu_18.04"
+             description: "Default operating system for node pool tests"
+           DEFAULT_NODEPOOL_NUMBEROFNODES_1:
+             allowCustom: true
+             default: 1
+             description: "Default number of nodes for node pool tests"
+         inputResources: 
+           - name: resource_pipelines
+         integrations:
+           - name: github_neha
+#            - name: slackTest
+#            - name: smtpNotification
+        execution:
+          onExecute:
+#             - printenv
+            - pushd $res_resource_pipelines_resourcePath
+            - ls
+            - echo "hi"
+#             - send_notification slackTest --text "Pipeline test"
+#             - send_notification smtpNotification --recipients "nehamishraj01@gmail.com" --subject "Build Succeeded" --body "Message received"
+
+#           onSuccess:
 #             - pushd $res_resource_pipelines_resourcePath
 #             - ls
-#             - echo "hi"
-# #             - send_notification slackTest --text "Pipeline test"
-# #             - send_notification smtpNotification --recipients "nehamishraj01@gmail.com" --subject "Build Succeeded" --body "Message received"
 
-# #           onSuccess:
-# #             - pushd $res_resource_pipelines_resourcePath
-# #             - ls
-
-#   - name: testing2
-#     steps:
-#       - name: myStep2
-#         type: Bash
-#         configuration:
-#          integrations:
-#            - name: github_neha
-#         execution:
-#           onExecute:
-#             - echo "hi"
-#   - name: testing3
-#     steps:
-#       - name: myStep3
-#         type: Bash
-#         execution:
-#           onExecute:
-#             - echo "hi"
+  - name: testing2
+    steps:
+      - name: myStep2
+        type: Bash
+        configuration:
+         integrations:
+           - name: github_neha
+        execution:
+          onExecute:
+            - echo "hi"
+  - name: testing3
+    steps:
+      - name: myStep3
+        type: Bash
+        execution:
+          onExecute:
+            - echo "hi"
 
 
 # resources:
