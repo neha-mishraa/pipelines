@@ -1,20 +1,20 @@
-resources:
- - name: connecting_resource_node_test
-   type: PropertyBag
-   configuration:
-     key1: value1
-     key2: value2
- - name: resource_pipelines
-   type: GitRepo
-   configuration:
-     gitProvider: github_neha
-     path: neha-mishraa/pipelines
-     files: 
-       include: ^README.md$
-     branches:
-       include: ^{{gitBranch}}$
-#      buildOn:
-#        commit: true
+# resources:
+#  - name: connecting_resource_node_test
+#    type: PropertyBag
+#    configuration:
+#      key1: value1
+#      key2: value2
+#  - name: resource_pipelines
+#    type: GitRepo
+#    configuration:
+#      gitProvider: github_neha
+#      path: neha-mishraa/pipelines
+#      files: 
+#        include: ^README.md$
+#      branches:
+#        include: ^{{gitBranch}}$
+# #      buildOn:
+# #        commit: true
 
 pipelines:
   - name: testing1
