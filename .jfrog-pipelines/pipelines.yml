@@ -20,16 +20,16 @@ pipelines:
   - name: testing1
     steps:
       - name: approval_gate_step
-       type: Bash
-       configuration:
+        type: Bash
+        configuration:
          requiresApproval:
            approvers:
              - admin
-#            notifications:
-#              - integrationName: pipelines_mqtest_slack
-       execution:
+        #            notifications:
+        #              - integrationName: pipelines_mqtest_slack
+        execution:
          onExecute:
-           - echo "Got the approval from Team Lead"
+           - echo "Got the approval"
 #       - name: myStep1
 #         type: Bash
 #         configuration:
