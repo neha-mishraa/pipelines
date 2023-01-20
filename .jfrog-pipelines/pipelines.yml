@@ -110,7 +110,7 @@ pipelines:
 #             - echo hello
 
 
-pipelines:
+# pipelines:
   - name: node_test_
     steps:
       - name: nodeTestStep
