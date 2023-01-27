@@ -1,9 +1,9 @@
 resources:
- - name: connecting_resource_node_test
-   type: PropertyBag
-   configuration:
-     key1: value1
-     key2: value2
+#  - name: connecting_resource_node_test
+#    type: PropertyBag
+#    configuration:
+#      key1: value1
+#      key2: value2
  - name: resource_pipelines
    type: GitRepo
    configuration:
@@ -74,7 +74,7 @@ pipelines:
       - name: myStep2
         type: Bash
         configuration:
-         nodePool: u20dynamic
+#          nodePool: u20dynamic
          integrations:
            - name: github_neha
         execution:
@@ -85,7 +85,7 @@ pipelines:
       - name: myStep3
         type: Bash
         configuration:
-         nodePool: c7dynamic
+#          nodePool: c7dynamic
         execution:
           onExecute:
             - echo "hi"
@@ -95,7 +95,7 @@ pipelines:
       - name: myStep4
         type: PowerShell
         configuration:
-         nodePool: win_2019
+#          nodePool: win_2019
         execution:
           onExecute:
             - echo "hi"
