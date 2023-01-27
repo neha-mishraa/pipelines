@@ -1,13 +1,13 @@
-resources:
- - name: resource_pipelines
-   type: GitRepo
-   configuration:
-     gitProvider: github_neha
-     path: neha-mishraa/pipelines
-     files: 
-       include: ^README.md$
-     branches:
-       include: ^{{gitBranch}}$
+# resources:
+#  - name: resource_pipelines
+#    type: GitRepo
+#    configuration:
+#      gitProvider: github_neha
+#      path: neha-mishraa/pipelines
+#      files: 
+#        include: ^README.md$
+#      branches:
+#        include: ^{{gitBranch}}$
 #      buildOn:
 #        pullRequestCreate: true
 #      cancelPendingRunsOn:
@@ -20,8 +20,8 @@ pipelines:
         type: Bash
         configuration:
 #          nodePool: u16dynamic
-         inputResources: 
-           - name: resource_pipelines
+#          inputResources: 
+#            - name: resource_pipelines
          integrations:
            - name: github_neha
         execution:
