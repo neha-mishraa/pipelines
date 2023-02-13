@@ -33,7 +33,7 @@ pipelines:
       - name: myStep1
         type: Bash
         configuration:
-          nodePool: new-dynamic-nodepool
+#           nodePool: new-dynamic-nodepool
           environmentVariables:
             DEFAULT_UBUNTU_NODEPOOL_OS:
               allowCustom: true
