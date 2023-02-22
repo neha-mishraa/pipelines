@@ -63,6 +63,7 @@ pipelines:
             - pushd $res_resource_pipelines_resourcePath
             - ls
             - echo "hi"
+            - echo "DEFAULT_UBUNTU_NODEPOOL_OS is ${DEFAULT_UBUNTU_NODEPOOL_OS}"
 #             - send_notification slackTest --text "Pipeline test"
 #             - send_notification smtpNotification --recipients "nehamishraj01@gmail.com" --subject "Build Succeeded" --body "Message received"
 
