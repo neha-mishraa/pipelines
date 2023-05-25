@@ -101,6 +101,17 @@ pipelines:
         execution:
           onExecute:
             - echo "hi"
+            
+            
+  - name: testing5
+    steps:
+      - name: myStep5
+        type: PowerShell
+        execution:
+          onExecute:
+            - echo "hi"
+            
+  
 
 
 # resources:
