@@ -79,9 +79,11 @@ pipelines:
 #          nodePool: u20dynamic
          integrations:
            - name: github_neha
+           - name: genericInt
         execution:
           onExecute:
             - echo "hi"
+            - echo "${int_genericInt_key}"
   - name: testing3
     steps:
       - name: myStep3
