@@ -1,0 +1,13 @@
+pipelines:
+  - name: demoCurlPipeline
+    steps:
+       - name: curlStep
+         type: Bash
+         configuration:
+           integrations:
+             - name: test_artifactory
+         execution:
+           onStart:
+             - echo "================= Adding helm cli $HELM_VERSION ======================================"
+             - curl -H "X-JFrog-Download-Redirect-To: pdn" -sSL -o helm.tar.gz https://get.helm.sh/helm-v3.4.0-linux-amd64.tar.gz
+             - tar xzvf helm.tar.gz
