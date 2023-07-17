@@ -35,15 +35,15 @@ pipelines:
     steps:
       - name: test_step
         type: Bash
-# #         configuration:
-# #          requiresApproval:
-# #            approvers:
-# #              - admin
-#         #            notifications:
-#         #              - integrationName: pipelines_mqtest_slack
-#         execution:
-#          onExecute:
-#            - echo "Got the approval"
+#         configuration:
+#          requiresApproval:
+#            approvers:
+#              - admin
+        #            notifications:
+        #              - integrationName: pipelines_mqtest_slack
+        execution:
+         onExecute:
+           - echo "Got the approval"
       - name: myStep1
         type: Bash
         configuration:
