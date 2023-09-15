@@ -8,15 +8,17 @@ pipelines:
             - export_pipeline_variables
             - |
               if [[ "$currentStatus" == "processing" ]]; then
-                echo "wait for sometime"
                 n=0 #starting value
                 max=5 #max-retries
-                until [ "$n" -ge "$max" ]
-                do
+                until [ "$n" -ge "$max" ]; do
                   export_pipeline_variables
-                  if [[ "$currentStatus" == "completed" ]] && break
-                  n=$((n+1)) 
-                  sleep 15
+                  if [[ "$currentStatus" == "completed" ]]
+                  then 
+                    break
+                  else
+                    n=$((n+1)) 
+                    sleep 15
+                  fi
                 done
               else
                 add_pipeline_variables currentStatus="processing"
