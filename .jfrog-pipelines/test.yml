@@ -8,7 +8,6 @@ pipelines:
             - export_pipeline_variables
             - |
               if [[ "$currentStatus" == "processing" ]]; then
-                echo "wait for sometime and poll for currentstatus value change"
                 n=0 #starting value
                 max=5 #max-retries
                 until [ "$n" -ge "$max" ]; do
