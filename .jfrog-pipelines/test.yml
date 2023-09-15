@@ -27,4 +27,4 @@ pipelines:
           onExecute: 
             - echo "Steps to be executed"
           onComplete:
-            - add_pipeline_variables currentStatus="completed"
+            - add_pipeline_variables currentStatus="processing"
