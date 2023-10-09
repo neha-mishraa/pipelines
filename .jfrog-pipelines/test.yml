@@ -1,29 +1,29 @@
-pipelines:
-  - name: demoPipeline
-    steps:
-      - name: demoStep
-        type: Bash
-        execution:
-          onStart:
-            - export_pipeline_variables
-            - |
-              if [[ "$currentStatus" == "processing" ]]; then
-                n=0 #starting value
-                max=5 #max-retries
-                until [ "$n" -ge "$max" ]; do
-                  export_pipeline_variables
-                  if [[ "$currentStatus" == "completed" ]]
-                  then 
-                    break
-                  else
-                    n=$((n+1)) 
-                    sleep 15
-                  fi
-                done
-              else
-                add_pipeline_variables currentStatus="processing"
-              fi
-          onExecute: 
-            - echo "Steps to be executed"
-          onComplete:
-            - add_pipeline_variables currentStatus="completed"
+# pipelines:
+#   - name: demoPipeline
+#     steps:
+#       - name: demoStep
+#         type: Bash
+#         execution:
+#           onStart:
+#             - export_pipeline_variables
+#             - |
+#               if [[ "$currentStatus" == "processing" ]]; then
+#                 n=0 #starting value
+#                 max=5 #max-retries
+#                 until [ "$n" -ge "$max" ]; do
+#                   export_pipeline_variables
+#                   if [[ "$currentStatus" == "completed" ]]
+#                   then 
+#                     break
+#                   else
+#                     n=$((n+1)) 
+#                     sleep 15
+#                   fi
+#                 done
+#               else
+#                 add_pipeline_variables currentStatus="processing"
+#               fi
+#           onExecute: 
+#             - echo "Steps to be executed"
+#           onComplete:
+#             - add_pipeline_variables currentStatus="completed"
