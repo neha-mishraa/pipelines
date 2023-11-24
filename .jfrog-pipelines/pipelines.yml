@@ -35,23 +35,6 @@ pipelines:
         type: Bash
         configuration:
 #           nodePool: new-dynamic-nodepool
-          # environmentVariables:
-          #   DEFAULT_UBUNTU_NODEPOOL_OS:
-          #     allowCustom: true
-          #     default: "Ubuntu_18.04"
-          #     description: "Default operating system for node pool tests"
-          #   DEFAULT_NODEPOOL_NUMBEROFNODES:
-          #     allowCustom: true
-          #     default: 1
-          #     description: "Default number of nodes for node pool tests"
-          #   DEFAULT_UBUNTU_NODEPOOL_OS_1:
-          #     allowCustom: true
-          #     default: "Ubuntu_18.04"
-          #     description: "Default operating system for node pool tests"
-          #   DEFAULT_NODEPOOL_NUMBEROFNODES_1:
-          #     allowCustom: true
-          #     default: 1
-          #     description: "Default number of nodes for node pool tests"
           inputResources: 
             - name: resource_pipelines
           integrations:
@@ -67,15 +50,20 @@ pipelines:
             - touch foo.txt
             - echo 'This is a test' > foo.txt
             - add_run_files foo.txt bar.txt
-            - restore_run_files bar.txt testResults
-            # - echo "DEFAULT_UBUNTU_NODEPOOL_OS is ${DEFAULT_UBUNTU_NODEPOOL_OS}"
-#             - send_notification slackTest --text "Pipeline test"
-#             - send_notification smtpNotification --recipients "nehamishraj01@gmail.com" --subject "Build Succeeded" --body "Message received"
-
 #           onSuccess:
 #             - pushd $res_resource_pipelines_resourcePath
 #             - ls
-
+      - name: myStepTest
+        type: Bash
+        configuration:
+#          nodePool: u20dynamic
+         integrations:
+           - name: github_neha
+           # - name: genericInt
+        execution:
+          onExecute:
+            - echo "hi"
+            - restore_run_files bar.txt testResults
   - name: testing2
     steps:
       - name: myStep2
