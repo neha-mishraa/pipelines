@@ -35,6 +35,10 @@ pipelines:
         type: Bash
         configuration:
 #           nodePool: new-dynamic-nodepool
+          environmentVariables:
+            readOnly:
+              env1: value1
+              env2: value2
           inputResources: 
             - name: resource_pipelines
           integrations:
@@ -44,12 +48,14 @@ pipelines:
         execution:
           onExecute:
 #             - printenv
-            - pushd $res_resource_pipelines_resourcePath
-            - ls
+            # - pushd $res_resource_pipelines_resourcePath
+            # - ls
             - echo "hi"
-            - touch foo.txt
-            - echo 'This is a test' > foo.txt
-            - add_run_files foo.txt bar.txt
+            - echo "env1 - $env1"
+            - echo "env2 - $env2"
+            # - touch foo.txt
+            # - echo 'This is a test' > foo.txt
+            # - add_run_files foo.txt bar.txt
 #           onSuccess:
 #             - pushd $res_resource_pipelines_resourcePath
 #             - ls
