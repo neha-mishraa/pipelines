@@ -36,9 +36,9 @@ pipelines:
         configuration:
 #           nodePool: new-dynamic-nodepool
           environmentVariables:
-            readOnly:
-              env1: value1
-              env2: value2
+            # readOnly:
+            env1: value1
+            env2: value2
           inputResources: 
             - name: resource_pipelines
           integrations:
