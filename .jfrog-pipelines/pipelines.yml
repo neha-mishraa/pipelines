@@ -66,19 +66,19 @@ pipelines:
 #           onSuccess:
 #             - pushd $res_resource_pipelines_resourcePath
 #             - ls
-      - name: myStepTest
-        type: Bash
-        configuration:
-         inputSteps:
-           - name: myStep1
-#          nodePool: u20dynamic
-         integrations:
-           - name: github_neha
-           # - name: genericInt
-        execution:
-          onExecute:
-            - echo "hi"
-            - restore_run_files bar.txt testResults
+#       - name: myStepTest
+#         type: Bash
+#         configuration:
+#          inputSteps:
+#            - name: myStep1
+# #          nodePool: u20dynamic
+#          integrations:
+#            - name: github_neha
+#            # - name: genericInt
+#         execution:
+#           onExecute:
+#             - echo "hi"
+#             - restore_run_files bar.txt testResults
   - name: testing2
     steps:
       - name: myStep2
