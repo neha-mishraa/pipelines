@@ -1,0 +1,1410 @@
+Introduction to Workers in Artifactory and Access
+Workers in Artifactory and Access provide a powerful and flexible mechanism to perform automated tasks, handle events, and integrate with external systems. Workers operate in different contexts, such as being scheduled at regular intervals, triggered by specific HTTP requests, or responding to system events, enabling a wide range of automation use cases and integrations.
+By leveraging workers, organizations can streamline many aspects of their operations, from routine system health checks to complex CI/CD pipeline integrations. Workers help ensure that tasks are executed consistently and reliably, freeing up human resources for more strategic activities.
+Types of Workers
+Scheduled Workers:
+Scheduled Workers execute tasks at predefined intervals. These workers are ideal for regular maintenance tasks, monitoring system health, and other periodic operations. They leverage the in-browser HTTP client to interact with the JFrog REST APIs or external endpoints.
+Example Use Case: A Scheduled Worker can regularly check the readiness of an Artifactory instance by making a GET request to the system readiness endpoint and logging the result.
+HTTP-Triggered Workers:
+HTTP-Triggered Workers are invoked by sending an HTTP request to the worker's endpoint. These workers are useful for on-demand tasks that need to be executed immediately based on specific triggers. They can handle complex workflows and provide real-time responses.
+Example Use Case: An HTTP-Triggered Worker can fetch the number of repositories in an Artifactory instance, categorized by type, and return this data for monitoring or reporting purposes.
+Event-Driven Workers (Artifactory Events):
+Event-Driven Workers are triggered by specific Artifactory events, such as creating artifacts, modifying properties, or deleting repositories. These workers allow you to automate responses to these events, ensuring that necessary actions are taken automatically.
+Example Use Case: A Before Delete event worker can prevent the deletion of an artifact based on specific conditions, ensuring that important data is not removed unintentionally.
+Event-Driven Workers (Access Events):
+Similar to Artifactory event-driven workers, these are triggered by specific events within the Access service, such as token creation or revocation. These workers help enforce security policies and maintain control over access management.
+Example Use Case: A Before Create Token event worker can validate user permissions and ensure compliance with security policies before allowing a token to be created.
+Benefits of Using Workers
+Automation: Automate repetitive tasks, reducing manual effort and minimizing the risk of human errors.
+Efficiency: Improve operational efficiency by scheduling routine maintenance and monitoring tasks.
+Integration: Seamlessly integrate Artifactory and Access with external systems, enhancing the ability to exchange data and trigger workflows.
+Scalability: Scale tasks effectively by leveraging the power and flexibility of workers, ensuring that tasks are executed consistently across environments.
+Compliance: Maintain audit trails and ensure compliance with organizational policies by automating checks and validations.
+Getting Started
+To get started with workers in Artifactory and Access, you can define custom workers that suit your specific needs, whether it involves scheduled maintenance tasks, on-demand operations triggered via HTTP requests, or reactions to system events. By integrating workers into your workflows, you can enhance the efficiency, reliability, and automation capabilities of your Artifactory and Access environments.
+
+
+
+
+After Create Events in Artifactory
+Description:
+After Create events in Artifactory are triggered automatically whenever a new artifact is created or uploaded into the Artifactory storage. This mechanism allows users to define custom actions or modifications that can be performed immediately after the creation of an artifact. It provides an efficient way to automate tasks, manage metadata, and ensure compliance with organizational policies without manual intervention.
+Utilizing After Create events, you can enhance artifact management by associating metadata, enforcing security measures, or triggering additional scripts/programs to perform necessary actions.
+Sample Use Cases:
+Metadata Enrichment:
+Scenario: When a new Docker image is uploaded, you want to add specific properties to improve searchability and filtering.
+Implementation: Trigger a script that automatically adds version, maintainer, and license information as properties to the newly created Docker image.
+Security and Compliance Checks:
+Scenario: Automatically validate security compliance of artifacts.
+Implementation: Initiate a security scan every time a new artifact is created to ensure it is free from known vulnerabilities. If vulnerabilities are detected, the event can trigger notifications or additional workflows for artifact remediation.
+Artifact Tagging:
+Scenario: You need to categorize and tag artifacts based on their environment (e.g., development, staging, production).
+Implementation: After an artifact is created, the event could trigger a process to evaluate the environment in which the artifact is being deployed, tagging it as ‘dev’, ‘staging’, or ‘prod’ accordingly.
+CI/CD Integration:
+Scenario: A new build artifact is generated during a CI/CD pipeline run, and you want to notify the relevant teams or trigger subsequent deployment processes.
+Implementation: Use the After Create event to send out notifications (e.g., via Slack, email) to the development and operations teams, informing them of the new artifact creation. Alternatively, trigger a deployment script to initiate the deployment process automatically.
+Audit Logging:
+Scenario: Maintain an audit trail of all artifacts being created for compliance purposes.
+Implementation: Automatically record details about the newly created artifact, including its name, version, creation timestamp, and user who uploaded it, into a dedicated audit log system.
+Version Control:
+Scenario: You wish to ensure that every artifact is associated with a correct version number upon creation.
+Implementation: After an artifact is created, leverage the event to execute logic that checks the versioning scheme and applies the correct version number formatting based on predefined rules.
+Cross-Repository Management:
+Scenario: An artifact created in one repository should be mirrored to another repository.
+Implementation: Use the After Create event to copy or replicate the artifact to a different repository automatically, ensuring consistent availability across environments.
+By leveraging After Create events, you can streamline your artifact management processes, enhance efficiency, and enforce organizational standards effectively. This level of automation reduces manual effort and minimizes the chances of human error, leading to a more robust and reliable software delivery lifecycle.
+
+
+Before Property Replication Events in Artifactory
+Description:
+Before Property Replication events in Artifactory are triggered prior to the replication of properties from one instance of Artifactory to another. This event allows users to evaluate and potentially modify the replication process based on specific criteria or conditions before any property data is sent to the target instance. It provides an opportunity to implement custom validation, filtering, or enforcement rules that can enhance governance, compliance, and data management across Artifactory instances.
+Utilizing Before Property Replication events, you can create a more controlled and tailored replication process, ensuring that only the desired properties are replicated and that artifacts meet organizational standards. This can significantly reduce unnecessary data transfer, maintain data integrity, and ensure compliance with data-sharing policies.
+Sample Use Cases:
+Selective Property Replication:
+Scenario: You need to prevent the replication of certain properties from a development instance to a production instance to avoid spreading debug-related information.
+Implementation: Set up logic that triggers on the Before Property Replication event to check for properties like debug.enabled and reject their replication if found.
+Security Compliance Filtering:
+Scenario: Certain properties may contain sensitive information that should not be replicated across instances.
+Implementation: Create rules that examine property names, and if they match patterns designated as sensitive (e.g., password, secretToken), the event can stop replication of those properties to maintain confidentiality.
+Version Control Restrictions:
+Scenario: Properties related to versioning should only replicate if the version number adheres to a specific format or policy.
+Implementation: Implement a validation check that prevents properties from being replicated unless they meet predefined versioning criteria (e.g., semver compliance).
+Environment-Based Filtering:
+Scenario: Properties should only replicate under certain conditions based on the environment (e.g., skipping properties linked to testing environments when moving to production).
+Implementation: Use the Before Property Replication event to assess whether the artifact belongs to a test environment and block replication accordingly.
+Prevent Duplicates:
+Scenario: Avoid duplicating properties that already exist in the target instance to reduce redundancy.
+Implementation: Before replication occurs, implement a check to see if a property already exists in the target instance. If it does, the event can prevent copying it again.
+Custom Logging for Audit Trails:
+Scenario: Track attempts to replicate properties for auditing and compliance purposes.
+Implementation: Generate logs of replication attempts with details about properties that are being replicated, including whether they were allowed or blocked, fostering transparency and accountability.
+Integration with Other Systems:
+Scenario: Prior to replicating properties, trigger external system validations or notifications based on property values.
+Implementation: Set up an integration that invokes an external API or service to validate properties before they are replicated, ensuring that they comply with business rules or requirements.
+By harnessing Before Property Replication events, you can ensure a more precise and strategic approach to managing property data across your Artifactory instances. This protection mechanism empowers organizations to adhere to best practices in data governance and compliance, streamline their replication processes, and enhance overall operational efficiency.
+After Property Delete Events in Artifactory
+Description:
+After Property Delete events in Artifactory are triggered automatically when a property is successfully deleted from an artifact. This event allows users to implement custom actions or workflows immediately following the removal of a property. By utilizing After Property Delete events, organizations can enhance their artifact management processes, enforce governance, and respond dynamically to changes in artifact metadata.
+These post-deletion hooks are ideal for performing cleanup operations, updating related records, or integrating with other systems to maintain compliance and data integrity.
+Sample Use Cases:
+Update Audit Logs:
+Scenario: Maintain a comprehensive audit trail whenever properties are deleted from artifacts to comply with organizational policies.
+Implementation: Trigger a logging mechanism that records details of the deleted property, including artifact name, property name, user who performed the deletion, and timestamp, into a dedicated audit log.
+Notify Stakeholders:
+Scenario: Inform relevant teams or stakeholders whenever a critical property is deleted from an artifact.
+Implementation: Use the After Property Delete event to send notifications via email or messaging platforms (e.g., Slack) to inform team members of the deletion, especially if the property had implications for ongoing projects.
+Cleanup Related Metadata:
+Scenario: Certain properties are linked to related data or metadata in other systems, and when one is deleted, related data may need to be cleaned up or modified.
+Implementation: Trigger a script that examines interdependencies and deletes or updates related metadata in external databases or systems whenever a certain property is removed.
+Evaluate Impact on CI/CD Pipelines:
+Scenario: The deletion of certain properties could affect continuous integration/continuous deployment (CI/CD) pipelines or automated processes.
+Implementation: Initiate checks in CI/CD tools to validate that pipeline parameters are still intact and operational after a property deletion. If necessary, notify the CI/CD system to halt further actions until the issue is resolved.
+Enforce Property Deletion Policies:
+Scenario: Organizations may have policies regarding the lifecycle of artifact properties, and specific deletions may trigger additional actions.
+Implementation: Set up rules that when certain properties related to security or compliance are deleted, additional workflows are initiated to review the implications or trigger alerts for further investigation.
+Re-evaluate Artifact Metadata:
+Scenario: When a property that impacts artifact classification or categorization is deleted, adjustments may be needed for related metadata or properties.
+Implementation: Use the event to reevaluate and update the artifact’s classification, tagging additional properties based on the remaining metadata to ensure accurate representation after the deletion.
+Sync with External Systems:
+Scenario: Maintain consistency between Artifactory and external inventory or management systems by reflecting metadata changes.
+Implementation: After a property deletion, trigger an API call to external systems (like inventory management or asset tracking tools) to synchronize property statuses and ensure all systems reflect the most current information.
+By effectively utilizing After Property Delete events, organizations can enhance their management of artifacts, ensure compliance with operational policies, and automate necessary follow-up actions, creating a more responsive and controlled environment for software development and delivery.
+
+
+
+
+Before Remote Info Events in Artifactory
+Description:
+Before Remote Info events in Artifactory are triggered just prior to the system fetching metadata or information from a remote repository. These events provide an opportunity for users to intervene and customize the behavior of the retrieval process, allowing for validation, modification, or even cancellation of the request based on specific criteria. This feature is particularly useful for enhancing governance, performing checks on external systems, and ensuring that only the desired information is accessed or processed.
+By leveraging Before Remote Info events, organizations can implement strict control measures, optimize retrieval processes, and cater the remote info requests to their specific operational standards.
+Sample Use Cases:
+Validation of Remote Repository Access:
+Scenario: Ensure that requests to remote repositories comply with access policies or security standards.
+Implementation: Trigger checks to validate user permissions or access credentials before fetching remote info. If the user doesn't have the right access, the event can cancel the request.
+Dynamic URL Modification:
+Scenario: Change the target URL or resource being accessed based on certain conditions (e.g., environment, user roles).
+Implementation: Use the event to modify the remote repository URL dynamically before the action is executed, directing requests to different endpoints based on the context (such as testing vs. production environments).
+Caching Logic Implementation:
+Scenario: Improve performance by leveraging cached information instead of fetching data from remote sources each time it's requested.
+Implementation: Before sending a request for remote info, check internal caches to see if the information is already available. If cache data exists, prevent the remote call and return cached results instead.
+External Logging or Monitoring:
+Scenario: Track all requests made to remote repositories for audit and monitoring purposes.
+Implementation: Trigger external logging mechanisms (e.g., log to a central logging system) whenever a remote info request is about to be made, capturing metadata about the request, such as user, timestamp, and requested resource.
+Conditional Request Cancellation:
+Scenario: Decide not to fetch remote info based on specific data or property values.
+Implementation: Before making a remote info call, check if certain criteria (e.g., specific artifact properties or states) are met. If they aren't, cancel the request to avoid unnecessary processing.
+Custom Authorization Checks:
+Scenario: Enforce custom business rules that dictate whether or not to access a remote repository.
+Implementation: Implement a mechanism that evaluates certain conditions or policies before executing the remote info request. If the criteria aren't met, deny access accordingly.
+Dependency Resolution Adjustments:
+Scenario: Retrieve dependencies only if certain preconditions are satisfied (e.g., target version or compatibility).
+Implementation: Create logic that checks if the remote artifact matches desired specifications or conditions; if not, bypass fetching that particular info.
+By utilizing Before Remote Info events, organizations can increase control over interactions with external repositories, ensuring that each request aligns with their operational needs and compliance requirements. This enhances overall efficiency and security in artifact management workflows and augments the flexibility of Artifactory to fit diverse organizational standards.
+Before Upload Events in Artifactory
+Description:
+Before Upload events in Artifactory are triggered right before a file is uploaded to the Artifactory storage. This event allows users to implement custom actions or validations prior to the actual upload process. By leveraging this event, organizations can enhance security, enforce compliance, and implement custom workflows to control what is being uploaded and how it is handled.
+Utilizing Before Upload events empowers users to intervene in the upload process, ensuring that only the correct and compliant artifacts are stored in Artifactory.
+Sample Use Cases:
+Security Scanning:
+Scenario: Ensure that all files being uploaded to Artifactory are free from malware and vulnerabilities.
+Implementation: Upon receiving an upload request, trigger a security scanning tool to analyze the file. If malicious content is detected, cancel the upload and notify the user.
+Validation of File Types:
+Scenario: Restrict uploads to certain file types (e.g., only allow .jar, .zip, or .tar files).
+Implementation: Implement a validation mechanism that checks the file extension or MIME type before allowing the upload to proceed. If the file type is not permitted, reject the upload.
+Custom Metadata Assignment:
+Scenario: Automatically assign metadata or properties to artifacts being uploaded based on specific criteria (e.g., branch name, environment).
+Implementation: Before the upload completes, evaluate the context (e.g., the user’s role or the source of the upload) and automatically add relevant properties to the artifact.
+Rate Limiting:
+Scenario: Control the number of uploads a user can perform within a certain time frame to prevent system overload.
+Implementation: Maintain a log of recent uploads and implement logic that checks the frequency of uploads. If a user exceeds a defined threshold, halt further uploads and return a notification of the limit breach.
+User Authentication and Permissions:
+Scenario: Ensure the uploading user has the necessary permissions to upload the artifact to the specified target repository.
+Implementation: Implement checks against user roles and permissions prior to executing the upload. If the user lacks sufficient privileges, deny the upload request.
+Dependency Checks:
+Scenario: Validate that the file being uploaded does not conflict with existing artifacts or dependencies in the repository.
+Implementation: Implement a dependency resolution check that queries existing artifacts related to the uploaded file. If conflicts are found, signal a warning or prevent the upload.
+Content Inspection and Tagging:
+Scenario: Analyze the contents of the file being uploaded to determine tags or categories that should be applied.
+Implementation: Trigger content inspection scripts that analyze the file, and depending on the content (e.g., specific keywords, file structure), automatically tag the artifact for better classification and searchability.
+Custom Notifications:
+Scenario: Notify development or operations teams whenever an upload is attempted, particularly for critical or sensitive artifacts.
+Implementation: Trigger a notification system that alerts team members via email or chat applications (e.g., Slack) whenever specific types of uploads are initiated, ensuring awareness of the changes in the artifact repository.
+By effectively utilizing Before Upload events, organizations can establish a more controlled and secure environment for managing and storing artifacts in Artifactory. This proactive approach enhances governance, compliance, and operational efficiency while reducing risks associated with unauthorized or faulty uploads.
+
+
+
+
+After Download Events in Artifactory
+Description:
+After Download events in Artifactory are triggered when the download execution begins, right after the download request is processed but before the actual data transfer might be complete. This event allows organizations to implement custom actions or workflows at the moment a download is initiated. By leveraging this event, you can enhance security, track usage, notify stakeholders, and enforce compliance with data access policies.
+Utilizing After Download events helps in monitoring and controlling the distribution of artifacts, ensuring that each download is appropriately logged, and any necessary actions are taken immediately as the download commences.
+Sample Use Cases:
+Audit Logging:
+Scenario: Maintain a comprehensive audit log of all download activities for compliance and monitoring purposes.
+Implementation: Trigger a logging mechanism when a download starts, recording details such as the artifact name, user initiating the download, timestamp, and the destination IP/host.
+User Activity Notifications:
+Scenario: Automatically notify stakeholders or administrators when specific artifacts are being downloaded.
+Implementation: Use the event to send notifications via email or messaging platforms (e.g., Slack) to alert team members of the download activity, especially for critical or sensitive artifacts.
+Access Control and Validation:
+Scenario: Ensure that certain artifacts are not downloaded too frequently or without proper authorization.
+Implementation: Upon triggering the event, validate the user's permissions and check if they have exceeded download limits. If any irregularities are detected, take appropriate actions such as throttling the download or notifying administrators.
+Data Usage Analytics:
+Scenario: Gather analytics on which artifacts are being downloaded most frequently and by whom for better resource planning.
+Implementation: Record details about each download to an analytics system that tracks usage patterns, helping to understand artifact popularity and user access trends.
+Automated Dependency Notifications:
+Scenario: Inform downstream systems or stakeholders when a dependent artifact is downloaded.
+Implementation: When a download starts for an artifact that is a dependency for other projects, send notifications or trigger additional processes that inform dependent teams or systems.
+Compliance and Security Checks:
+Scenario: Track downloads for compliance with security policies, such as ensuring sensitive data is only accessed by authorized personnel.
+Implementation: Trigger checks against security policies to log or alert any downloads of sensitive or classified artifacts, facilitating immediate response if inappropriate access is detected.
+Dynamic Tagging:
+Scenario: Apply or update tags and metadata on an artifact when it is downloaded to track its usage lifecycle.
+Implementation: When a download begins, automatically add or update a tag indicating the artifact has been accessed, helping in lifecycle management and tracking.
+Conditional Download Restrictions:
+Scenario: Implement restrictions that take effect when certain conditions are met to prevent unauthorized downloads.
+Implementation: Before the completion of the download, examine conditions such as time of access, network location, or concurrent download limits, and block the download if any restrictive conditions are met.
+Cross-System Notifications:
+Scenario: Trigger integrations with other tools or systems when an artifact is downloaded.
+Implementation: Utilize the event to trigger webhooks or API calls to external systems, ensuring coordinated actions across toolchains whenever specific artifacts are downloaded.
+By harnessing After Download events, organizations can implement comprehensive monitoring, enforce policies, and respond dynamically to download activities. This capability enhances security, ensures compliance, and provides the necessary oversight to manage the distribution of artifacts effectively within Artifactory.
+
+
+
+
+Before Property Delete Events in Artifactory
+Description:
+Before Property Delete events in Artifactory are triggered just before a property is deleted from an artifact. This event provides an opportunity for users to implement checks, validations, or custom logic to ensure that property deletions are compliant with organizational policies and security requirements. By leveraging Before Property Delete events, users can prevent unauthorized changes, enforce governance, and ensure that property deletions occur under the appropriate conditions.
+Utilizing Before Property Delete events helps maintain control over artifact metadata and enhances security and compliance within the artifact management lifecycle.
+Sample Use Cases:
+Permission Verification:
+Scenario: Ensure that only authorized users are allowed to delete certain properties from artifacts.
+Implementation: Before a property is deleted, check the user's permissions and validate if they have the necessary rights. If not, block the deletion and notify the user or relevant administrators of the unauthorized attempt.
+Prevent Deletion of Critical Properties:
+Scenario: Protect critical properties (e.g., version, license) from being accidentally or maliciously deleted.
+Implementation: Implement custom logic that identifies critical properties and prevents their deletion, ensuring that important metadata remains intact.
+Logging and Auditing:
+Scenario: Maintain an audit trail of all attempts to delete properties from artifacts for compliance and monitoring purposes.
+Implementation: Before allowing the deletion, log details such as the artifact name, property name, user initiating the deletion, and timestamp to an audit log system. This helps in tracking changes and identifying any unauthorized actions.
+Validation of Conditions:
+Scenario: Ensure that certain conditions are met before a property can be deleted (e.g., all related workflows are completed).
+Implementation: Implement rules that check predefined conditions or states before permitting the property deletion. If the conditions are not met, block the deletion and inform the user of the required conditions.
+Integration with External Systems:
+Scenario: Notify or update external systems when a property deletion is about to take place.
+Implementation: Use the event to trigger webhooks or API calls to external systems, ensuring that they are aware of the impending property deletion and can take necessary actions (e.g., updating records, firing alerts).
+Prevent Deletion If Usage Dependencies Exist:
+Scenario: Avoid deleting properties that are still in use by other artifacts or systems.
+Implementation: Before the deletion, check for any dependencies or usage of the property across other artifacts or systems. If dependencies are found, block the deletion and notify the user.
+User Confirmation for Sensitive Deletions:
+Scenario: Require additional user confirmation before deleting sensitive or important properties.
+Implementation: Implement a prompt or confirmation step that asks the user to confirm the deletion if the property is deemed sensitive. If the user does not confirm, cancel the deletion process.
+Group Policies Enforcement:
+Scenario: Apply group-specific policies to control property deletions.
+Implementation: Before deleting a property, evaluate group policies that may restrict or allow such actions based on roles, project memberships, or other group criteria. Enforce the policies accordingly to allow or prevent the deletion.
+By leveraging Before Property Delete events, organizations can ensure that property deletions are authorized, controlled, and compliant with internal policies. This proactive approach helps in maintaining the integrity of metadata, enhancing security, and providing a robust mechanism for artifact management within Artifactory.
+
+
+
+
+After Move Events in Artifactory
+Description:
+After Move events in Artifactory are triggered immediately after an artifact is successfully moved from one repository to another. This event allows users to implement custom actions or workflows in response to the movement of artifacts, facilitating metadata updates, notification deliveries, logging, and other post-move activities. Utilizing After Move events helps maintain operational continuity, ensure compliance, and enhance automated management processes within Artifactory.
+With After Move events, users can add layers of automation and control to their artifact management practices, ensuring that all necessary actions are taken following the relocation of artifacts.
+Sample Use Cases:
+Metadata Update:
+Scenario: Update or modify artifact metadata to reflect its new repository location.
+Implementation: Configure a script to automatically update metadata properties, such as the repository name or path, to match the new location of the artifact.
+Notification Systems:
+Scenario: Notify relevant teams or stakeholders when critical artifacts are moved to specific repositories.
+Implementation: Trigger notifications via email or messaging platforms (e.g., Slack) to inform team members or stakeholders about the movement of certain artifacts, especially those critical to ongoing projects.
+Access Control Adjustments:
+Scenario: Adjust access controls based on the new location of the artifact.
+Implementation: After an artifact is moved, update its access control lists (ACLs) to ensure that permissions are correctly enforced according to the policies of the new repository.
+Audit Logging:
+Scenario: Maintain an audit trail of all artifact moves for compliance and tracking purposes.
+Implementation: Record details of the move, including the artifact name, original and new repository locations, the user initiating the move, and timestamp, to an audit log system.
+Dependency Management:
+Scenario: Update dependency references or configurations affected by the move.
+Implementation: Automatically update any dependency files, build configurations, or other artifacts that reference the moved artifact to ensure they point to its new location.
+Post-Move Validation:
+Scenario: Validate that the artifact was successfully moved and is functioning as expected in its new location.
+Implementation: Run validation scripts to ensure that the artifact and its metadata were correctly transferred and are operational in the new repository. If any issues are detected, send alerts or roll back the operation.
+Integration with CI/CD Pipelines:
+Scenario: Trigger CI/CD pipeline actions based on the movement of artifacts.
+Implementation: Upon moving an artifact to a new repository, trigger build or deployment jobs in CI/CD tools to reflect the change, ensuring that the latest versions are used in downstream processes.
+Repository Quota Management:
+Scenario: Manage storage quotas and ensure balanced distribution of artifacts across repositories.
+Implementation: After moving an artifact, update storage quota metrics and balance artifact distribution to prevent any single repository from exceeding its allocated storage capacity.
+Cross-System Synchronization:
+Scenario: Synchronize data across multiple systems that require knowledge of artifact locations.
+Implementation: Trigger API calls or webhooks to external systems (e.g., inventory management, asset tracking tools) to update them with the artifact's new location, maintaining data consistency across systems.
+Custom Tagging or Labeling:
+Scenario: Apply or update tags and labels on an artifact based on its new repository context.
+Implementation: Automatically add or modify tags and labels to reflect the artifact’s new repository, helping with organization and searchability in large-scale repositories.
+By harnessing After Move events, organizations ensure that artifact movements are seamlessly integrated into their operational workflows, maintaining accuracy, control, and efficiency. This results in improved overall management and tracking of artifacts within the Artifactory ecosystem.
+
+
+
+
+Alt Response Events in Artifactory
+Description:
+Alt Response events in Artifactory are triggered before Artifactory attempts to access a remote path. This event allows users to modify the behavior of remote requests, redirect them, or provide alternative responses based on specific criteria or policies. Utilizing Alt Response events can enhance control over remote repository interactions, optimize technical processes, and implement sophisticated routing and response strategies without modifying client configurations.
+By leveraging Alt Response events, organizations can ensure that remote access is aligned with operational policies, improve efficiency, and provide a tailored response mechanism for remote resource requests.
+Sample Use Cases:
+Remote Path Validation:
+Scenario: Ensure that remote paths being accessed comply with organizational or security policies.
+Implementation: Before reaching a remote path, use the event to validate the request against predefined rules. If the path does not comply, modify the request or block access and generate a custom response.
+Dynamic Request Redirection:
+Scenario: Redirect requests to alternative URLs or endpoints based on specific conditions (e.g., load balancing, resource availability).
+Implementation: Implement logic to dynamically modify the remote path before the request is executed, redirecting it to an alternate location as necessary.
+Content Caching and Shortcut Responses:
+Scenario: Provide cached responses for frequently accessed remote paths to reduce latency and load on remote servers.
+Implementation: Check if the requested content is available in a local cache. If so, intercept the request and deliver the cached response instead of reaching out to the remote path.
+Custom Error Handling:
+Scenario: Customize the error response based on specific criteria or conditions.
+Implementation: Before accessing a remote path, implement checks that can anticipate potential errors and pre-emptively generate detailed, user-friendly error messages or alternative suggestions.
+Security and Access Control:
+Scenario: Enforce additional security measures or access controls before reaching remote paths.
+Implementation: Implement authentication and authorization checks to ensure that only authenticated and authorized requests proceed to the remote path. If unauthorized, block the request and return an appropriate response.
+Network Optimization:
+Scenario: Optimize network usage by rerouting requests based on real-time network conditions or proximity.
+Implementation: Use network-aware logic to determine the most efficient route for a remote request, potentially redirecting it to closer or less-congested endpoints.
+Usage Analytics:
+Scenario: Track requests to remote paths for analytics and monitoring purposes.
+Implementation: Log details about requests before they reach remote paths, capturing data such as user, timestamp, and requested resource for later analysis and reporting.
+Conditional Preprocessing:
+Scenario: Modify requests or attach additional data before they reach remote paths.
+Implementation: Implement preprocessing logic to add headers, modify query parameters, or attach supplementary data to requests based on specific conditions before forwarding them to the remote path.
+Maintenance Mode Actions:
+Scenario: Provide alternative responses or redirect requests if the remote repository is under maintenance.
+Implementation: Implement logic to detect if the remote repository is under maintenance and generate an alternative response, redirecting users to a maintenance page or backup resource.
+Version Compatibility Checks:
+Scenario: Ensure that requests to remote paths are compatible with the version of the resource being accessed.
+Implementation: Implement version checks before reaching the remote path, ensuring compatibility. If the requested version is incompatible, modify the request or provide an alternative response.
+By effectively utilizing Alt Response events, organizations can gain finer control over how remote repository interactions are handled, providing flexibility, enhancing efficiency, and aligning remote access with broader operational strategies and policies.
+
+
+
+
+Before Remote Download Events in Artifactory
+Description:
+Before Remote Download events in Artifactory are triggered just before Artifactory initiates a download request to fetch an artifact from a remote repository. These events provide an opportunity to verify, modify, or enforce policies on the download process before any data is transferred. By leveraging Before Remote Download events, organizations can enhance security, optimize network usage, and ensure that remote downloads comply with internal standards and requirements.
+Utilizing Before Remote Download events helps in maintaining control over external data interactions, ensuring that each remote download request aligns with organizational operational policies and enhances the integrity of the artifact management process.
+Sample Use Cases:
+Security and Compliance Checks:
+Scenario: Ensure that artifacts being downloaded from remote repositories meet security and compliance standards.
+Implementation: Implement security validation checks before the download is initiated. If the artifact does not meet specified security or compliance criteria, block the download request and possibly notify security teams.
+User Permission Verification:
+Scenario: Ensure that only authorized users can initiate downloads from specific remote repositories.
+Implementation: Verify user permissions before the remote download request is processed. If the user lacks appropriate permissions, cancel the download request and log the event for further review.
+Rate Limiting and Throttling:
+Scenario: Prevent overuse of network resources by limiting the number of remote downloads a user can perform in a given time period.
+Implementation: Implement a rate-limiting mechanism to track and control the frequency of remote download requests per user. If the user exceeds the allowed rate, block further downloads and notify them of the limit.
+Credential and Token Management:
+Scenario: Ensure that the correct authentication credentials or tokens are used for accessing remote repositories.
+Implementation: Verify and refresh authentication tokens or credentials as necessary before initiating the download. This ensures secure and authorized access to remote repositories.
+Request Validation and Modification:
+Scenario: Modify download requests based on specific conditions or criteria.
+Implementation: Implement logic to inspect and alter the download request (e.g., adding headers, adjusting parameters) to meet specific requirements or optimizations before it is processed.
+Content Caching Checks:
+Scenario: Reduce redundant downloads by checking local caches before initiating a remote download.
+Implementation: Verify if the requested artifact is already available in a local cache. If so, serve the cached version instead of initiating a new download from the remote repository.
+Network Load Balancing:
+Scenario: Optimize network usage by balancing remote download requests across multiple endpoints.
+Implementation: Implement logic to dynamically select the best endpoint based on current network load and performance metrics before initiating the remote download.
+Audit Logging for Compliance:
+Scenario: Maintain an audit trail of all remote download attempts for compliance and monitoring purposes.
+Implementation: Log details about each remote download request, including user information, timestamp, and requested artifact, for auditing and monitoring.
+Dependency Resolution:
+Scenario: Ensure that the artifact being downloaded does not conflict with existing dependencies.
+Implementation: Perform dependency checks before initiating the remote download to ensure compatibility with existing artifacts and dependencies. If conflicts are detected, block the download and suggest alternative actions.
+Geolocation-Based Restrictions:
+Scenario: Enforce restrictions on downloads based on the geographic location of the request.
+Implementation: Implement geolocation checks to determine if the download request adheres to location-based policies. If the request is from a restricted region, block the download and log the event.
+By leveraging Before Remote Download events, organizations can exercise granular control over the download process, ensuring that interactions with remote repositories are secure, compliant, and efficient. This proactive approach enhances the overall integrity and performance of the artifact management system.
+
+
+
+
+Before Statistics Replication Events in Artifactory
+Description:
+Before Statistics Replication events in Artifactory are triggered before replicating artifact statistics, such as download counts, between instances of Artifactory. This event allows for the implementation of custom logic to validate, modify, or prevent the replication of statistics based on specific conditions. Utilizing Before Statistics Replication events helps ensure that only the appropriate statistics are replicated, preserving data integrity and complying with organizational policies.
+By leveraging these events, organizations can control and manage the replication of artifact usage metrics more effectively, ensuring they align with operational requirements and strategic goals.
+Sample Use Cases:
+Conditional Replication Control:
+Scenario: Prevent the replication of download counts to certain instances based on the instance type (e.g., staging, development).
+Implementation: Implement logic that checks the type of target instance before allowing the statistics to replicate. If the instance is identified as non-production (e.g., staging or development), block the replication to prevent misleading statistics.
+User and Role-Based Restrictions:
+Scenario: Allow replication of statistics only for certain users or roles.
+Implementation: Check the user or role involved in initiating the replication. If the user or role does not meet specific criteria, prevent the statistics from replicating to maintain control over sensitive data.
+Frequency and Rate Limiting:
+Scenario: Control how often statistics are replicated to avoid overloading the system or network.
+Implementation: Implement rate limiting to restrict the frequency of replication events. If the replication is happening too frequently, delay or block the event until a specified time has passed.
+Validation of Accuracy:
+Scenario: Ensure that the statistics being replicated are accurate and within an acceptable range.
+Implementation: Before replicating, validate the statistics to check for any anomalies or inconsistencies. If the statistics appear inaccurate or corrupted, halt the replication and trigger an alert for further investigation.
+Environment-Based Filtration:
+Scenario: Replicate statistics only to instances running in a specific environment.
+Implementation: Use environment tags or labels to filter and control replication. If the target instance does not match the desired environment criteria (e.g., production), block the statistics replication.
+Security and Compliance Checks:
+Scenario: Ensure that statistics replication adheres to security and compliance policies.
+Implementation: Implement checks to validate compliance with data handling policies before allowing statistics replication. If the replication does not comply, block the action and log the event for audit purposes.
+Impact Analysis and Approval Workflows:
+Scenario: Trigger approval workflows before replicating statistics that significantly impact business metrics.
+Implementation: Before replicating significant statistics changes (e.g., large spike in download counts), trigger an approval process requiring managerial or automated validation to proceed with replication.
+Custom Logging and Monitoring:
+Scenario: Log replication attempts for monitoring and auditing purposes.
+Implementation: Record details about each replication attempt, including the artifact involved, the statistics being replicated, the user initiating the replication, and the timestamp. Use this data for audit trails and monitoring system performance.
+Data Segmentation:
+Scenario: Replicate statistics selectively based on data segmentation rules.
+Implementation: Define rules to segment data (e.g., by region, department, or project) and replicate statistics only for the relevant segments. This ensures that only the necessary data is synchronized across instances.
+Pre-Processing and Transformation:
+Scenario: Modify or enrich statistics before replication based on business logic.
+Implementation: Implement pre-processing logic to transform or aggregate statistics before replicating. For example, you might combine download counts from multiple sources or adjust metrics based on specific business rules.
+By utilizing Before Statistics Replication events, organizations can ensure that the replication of artifact statistics is controlled, secure, and aligned with their operational policies. This proactive approach enhances data integrity, compliance, and the strategic management of usage metrics across Artifactory instances.
+
+
+
+
+Before File Replication Events in Artifactory
+Description:
+Before File Replication events in Artifactory are triggered just before a file or artifact is replicated from one Artifactory instance to another. These events allow users to implement custom logic and validations to ensure that replication meets specific organizational policies and requirements. By leveraging Before File Replication events, organizations can control, manage, and potentially prevent the replication of artifacts based on predefined conditions, thus enhancing security, compliance, and operational efficiency.
+Utilizing Before File Replication events helps in maintaining better governance of artifact distribution and ensures that only suitable files are replicated across systems.
+Sample Use Cases:
+Conditional File Replication Control:
+Scenario: Prevent the replication of specific artifacts based on their metadata or properties.
+Implementation: Implement logic that checks the metadata or properties of the artifact before allowing replication. If certain conditions (e.g., specific property values) are met, block the replication to maintain control over artifact distribution.
+Instance-Based Restrictions:
+Scenario: Allow or disallow file replication based on the source or target Artifactory instance.
+Implementation: Check the source and target instance identifiers before proceeding with replication. If the replication involves restricted instances (e.g., from a test instance to a production instance), deny the replication request and log the event.
+User and Role-Based Permissions:
+Scenario: Limit replication capabilities to certain users or roles within the organization.
+Implementation: Verify the user or role initiating the replication before allowing it to proceed. If the user does not have the necessary permissions, prevent the replication and notify the user or admins.
+File Type and Size Validation:
+Scenario: Restrict replication based on the type and size of the file.
+Implementation: Implement checks to validate the file type (e.g., only allow specific file extensions) and size before replication. If the file does not meet the allowed criteria, block the replication process.
+Compliance and Security Policies:
+Scenario: Ensure that file replications comply with security and regulatory policies.
+Implementation: Implement compliance and security checks to verify that the file and its replication meet organizational standards. If the file fails any check, halt the replication and trigger alerts for review.
+Checksum and Integrity Verification:
+Scenario: Verify the integrity of the file before replication.
+Implementation: Calculate and verify file checksums to ensure data integrity. If the checksum does not match the expected value, prevent the replication and handle the discrepancy accordingly.
+Rate Limiting and Throttling:
+Scenario: Control the replication frequency to avoid overloading network and storage resources.
+Implementation: Implement rate limiting logic to monitor and control how often files are replicated. If the rate exceeds a predefined threshold, delay or block additional replications until conditions allow.
+Audit Logging for Governance:
+Scenario: Maintain an audit log of all replication attempts for governance and monitoring purposes.
+Implementation: Log details such as artifact name, source and target instances, user initiating replication, timestamp, and outcome of the replication request. This provides a comprehensive audit trail for compliance and analysis.
+Pre-Synchronization Conditions:
+Scenario: Ensure preconditions are met before allowing file replication.
+Implementation: Define and check preconditions (e.g., successful completion of related tasks or workflows) before permitting replication. If any conditions are unmet, block the replication and inform the relevant stakeholders.
+Custom Transformation Before Replication:
+Scenario: Apply transformations or modifications to files before they are replicated to the target instance.
+Implementation: Implement pre-processing steps to modify files (e.g., metadata enrichment or format conversions) just before replication. Ensure these transformations align with the business needs and target environment requirements.
+By leveraging Before File Replication events, organizations can enforce a high degree of control over how files are distributed between Artifactory instances, ensuring that all replications are compliant, secure, and efficient. This proactive approach to file management enhances data integrity and aligns replication activities with the organization's operational policies and strategies.
+
+
+
+
+After Property Create Events in Artifactory
+Description:
+After Property Create events in Artifactory are triggered immediately after a property is successfully created on an artifact. These events allow users to implement custom actions or workflows in response to the creation of properties, such as logging, notifications, and integration with other systems. Utilizing After Property Create events helps ensure that necessary follow-up actions are taken, enhancing operational efficiency, compliance, and data management practices.
+By leveraging these events, organizations can maintain better oversight and control of property management, ensuring that all property creations are properly handled and integrated into broader workflows.
+Sample Use Cases:
+Audit Logging:
+Scenario: Maintain an audit trail of all property creations for compliance and monitoring purposes.
+Implementation: Trigger a logging mechanism that records details of the newly created property, including the artifact name, property name, value, user who created the property, and timestamp. Store this information in an audit log system for future reference.
+Notifications to Stakeholders:
+Scenario: Notify relevant teams or stakeholders when specific properties are created on artifacts.
+Implementation: Send notifications via email or messaging platforms (e.g., Slack) to inform team members or stakeholders about the creation of properties, especially those critical to ongoing projects or operations.
+Integration with External Systems:
+Scenario: Synchronize property creation events with external systems such as CMDBs (Configuration Management Databases) or asset management tools.
+Implementation: Use the event to trigger webhooks or API calls to external systems, updating them with the details of the newly created property to ensure data consistency across systems.
+Property-Based Automation:
+Scenario: Trigger automated workflows based on the creation of specific properties.
+Implementation: Configure automation tools (e.g., Jenkins, Ansible) to trigger specific workflows or scripts when certain properties are created. For example, creating a "deployed" property might trigger deployment verification scripts.
+Compliance and Security Enforcement:
+Scenario: Ensure that the creation of properties complies with security and regulatory policies.
+Implementation: Implement checks to validate that newly created properties do not violate any compliance or security rules. If a violation is detected, log the event and alert security teams for further action.
+Metadata Enrichment:
+Scenario: Automatically enrich newly created properties with additional metadata or related information.
+Implementation: Trigger scripts that add supplementary data to the artifact whenever a property is created. For example, adding a "creator" property might prompt adding additional properties like "creationTimestamp" and "creatorDepartment."
+Dependency Updates:
+Scenario: Update dependent artifacts or configurations based on property creation.
+Implementation: Automatically update other artifacts, dependency lists, or configuration files when certain properties are created to reflect the new state accurately.
+User Access and Permissions Adjustments:
+Scenario: Adjust user access and permissions based on newly created properties.
+Implementation: Implement logic that evaluates the new property and adjusts access controls or permissions related to the artifact accordingly. For example, creating a "restricted" property might tighten access controls.
+Dynamic Tagging and Classification:
+Scenario: Apply or update tags and classifications for artifacts based on property creation.
+Implementation: Automatically tag or reclassify artifacts when specific properties are created, helping to organize and manage artifacts more effectively within the repository.
+Analytics and Reporting:
+Scenario: Collect and analyze data on property creation for insights and reporting.
+Implementation: Capture property creation events and feed the data into analytics tools to generate reports on property usage trends, artifact management efficiency, and other valuable insights.
+By leveraging After Property Create events, organizations can implement comprehensive follow-up actions, ensuring that property creation is seamlessly integrated into their operational workflows. This enhances oversight, improves data integrity, and increases overall efficiency in managing artifact properties within Artifactory.
+
+
+
+
+Before Create Events in Artifactory
+Description:
+Before Create events in Artifactory are triggered immediately before an artifact is created or uploaded into the Artifactory storage. These events provide an opportunity for users to implement custom logic, validations, and checks to ensure that only compliant and authorized artifacts are stored. By leveraging Before Create events, organizations can prevent unauthorized or non-compliant artifacts from being added, thereby enhancing security, compliance, and data integrity.
+Utilizing Before Create events helps maintain rigorous control over the artifact creation process, ensuring that all artifacts meet predefined criteria before they are stored in the system.
+Sample Use Cases:
+Artifact Metadata Validation:
+Scenario: Ensure that artifacts contain required metadata before they are created.
+Implementation: Implement a validation check that verifies the presence and validity of necessary metadata (e.g., version, author, license) before allowing the artifact to be created. If metadata is missing or invalid, block the creation and notify the user.
+User Permission Checks:
+Scenario: Restrict artifact creation to authorized users or roles.
+Implementation: Verify that the user initiating the creation has the necessary permissions. If the user lacks appropriate access rights, deny the creation request and log the event for audit purposes.
+File Type and Size Restrictions:
+Scenario: Enforce policies related to the types and sizes of files that can be stored.
+Implementation: Implement logic to check the file type (e.g., allowed extensions) and size before creation. If the file type or size does not meet policy requirements, reject the creation and inform the user.
+Naming Conventions Enforcement:
+Scenario: Ensure that artifact names conform to organizational naming conventions.
+Implementation: Validate the naming pattern of the artifact against predefined conventions before creation. If the name does not conform, block the creation process and prompt the user to adjust the name accordingly.
+Compliance and Security Policies:
+Scenario: Ensure that the artifact creation process complies with security and regulatory requirements.
+Implementation: Conduct checks to validate that the artifact adheres to compliance and security policies. If the artifact violates any policy, prevent its creation and trigger alerts for security personnel.
+Duplicate Artifact Detection:
+Scenario: Avoid the creation of duplicate artifacts in the repository.
+Implementation: Check if an artifact with the same name or checksum already exists in the repository before allowing creation. If a duplicate is detected, block the creation and notify the user.
+Content Scanning for Malicious Code:
+Scenario: Prevent the storage of malicious or harmful content in the repository.
+Implementation: Use content scanning tools to analyze the artifact for malware or other threats before creation. If any malicious content is detected, terminate the creation process and alert the security team.
+Quota Management:
+Scenario: Manage and enforce storage quotas for users or projects.
+Implementation: Before creating an artifact, check the current storage usage against defined quotas. If the creation would exceed the quota, deny the request and inform the user of the quota limits.
+Dependency and Compatibility Checks:
+Scenario: Ensure that the artifact being created does not conflict with existing dependencies.
+Implementation: Perform dependency and compatibility checks before creation to verify that the new artifact does not introduce conflicts. If conflicts are detected, block the creation and suggest remedial actions.
+Pre-Approval Workflows:
+Scenario: Require managerial or automated pre-approval before creating certain types of artifacts.
+Implementation: Implement a pre-approval workflow where specific artifacts require authorization before creation. If approval is not granted, prevent the artifact from being created and notify the appropriate stakeholders.
+Custom Logging for Analytics:
+Scenario: Log details about the creation attempt for analytics and tracking purposes.
+Implementation: Record information such as artifact name, user, timestamp, and validation results before proceeding with the creation. Use these logs for analytical insights and continuous improvement of artifact management processes.
+By leveraging Before Create events, organizations can enforce robust controls over the artifact creation process, ensuring that only authorized, compliant, and properly validated artifacts are stored in Artifactory. This proactive approach enhances data integrity, security, and operational efficiency.
+After Build Info Save Events in Artifactory
+Description:
+After Build Info Save events in Artifactory are triggered immediately after build information is saved in the Artifactory storage. These events allow users to implement custom actions or workflows in response to the successful saving of build info. By leveraging After Build Info Save events, organizations can automate processes such as notifications, integrations with external systems, logging, and compliance checks, thereby enhancing the overall build management and continuous integration/continuous deployment (CI/CD) workflows.
+Utilizing After Build Info Save events ensures that critical actions are taken immediately following the recording of build data, improving operational efficiency and data integrity.
+Sample Use Cases:
+Audit Logging:
+Scenario: Maintain an audit trail of all build info saves for compliance and monitoring purposes.
+Implementation: Trigger a logging mechanism that records details of the saved build info, including build name, version, timestamp, and user who initiated the build. Store this information in an audit log system for future reference.
+Notifications to Stakeholders:
+Scenario: Notify relevant teams or stakeholders when new build info is saved.
+Implementation: Send notifications via email or messaging platforms (e.g., Slack) to inform team members or stakeholders about the new build info, especially for key builds or releases.
+Integration with External Systems:
+Scenario: Synchronize build info with external systems like CI/CD tools, issue trackers, or configuration management databases (CMDB).
+Implementation: Use the event to trigger webhooks or API calls to update external systems with the new build info, ensuring data consistency and integration across systems.
+Automating Deployment Processes:
+Scenario: Automatically trigger deployment processes based on the saved build info.
+Implementation: Configure deployment tools to start deployment workflows when new build info is saved. For example, a successful build save could trigger a deployment to staging or production environments.
+Compliance and Security Enforcement:
+Scenario: Ensure that saved build info complies with security and regulatory policies.
+Implementation: Implement checks to validate that the saved build info adheres to compliance and security standards. If any issues are detected, alert the security or compliance teams for further action.
+Quality Assurance and Testing:
+Scenario: Initiate automated testing or quality assurance processes based on new build info.
+Implementation: Configure automated testing frameworks to run tests when new build info is saved. If tests are initiated, analyze the results and notify relevant teams if issues are found.
+Metrics and Analytics Collection:
+Scenario: Collect and analyze build metrics for insights and reporting purposes.
+Implementation: Capture details about the saved build info and feed the data into analytics tools to generate reports on build performance, frequency, and success rates.
+Dependency and Compatibility Checks:
+Scenario: Perform dependency and compatibility analysis based on the new build info.
+Implementation: Automatically trigger dependency checks or scans to ensure that new builds do not introduce conflicts or compatibility issues with existing artifacts or systems.
+Version Control Integration:
+Scenario: Link saved build info to version control repositories for traceability.
+Implementation: Update version control repositories with details of the new build info, including commit hashes, branch names, and change logs, to ensure traceability and version consistency.
+Resource Management:
+Scenario: Manage and allocate resources based on build info updates.
+Implementation: Automatically adjust resource allocations (e.g., storage, compute resources) based on the saved build info. This ensures that resources are managed efficiently according to the current build activity.
+Custom Tagging and Metadata Updates:
+Scenario: Automatically apply tags or update metadata for artifacts based on the new build info.
+Implementation: Implement mechanisms to tag artifacts or update their metadata with relevant build information, enhancing organization and searchability within the repository.
+By leveraging After Build Info Save events, organizations can streamline processes, ensure continuous integration and delivery, and maintain high standards of compliance and data integrity. This enhances the efficiency and effectiveness of build management workflows within Artifactory.
+Alt All Responses Events in Artifactory
+Description:
+Alt All Responses events in Artifactory are triggered before Artifactory attempts to access a remote path. These events offer the flexibility to intercept, modify, or handle requests to remote repositories dynamically before the actual execution. By leveraging Alt All Responses events, users can implement custom logic to enhance security, optimize network usage, enforce compliance, provide alternative responses, or redirect requests based on specific conditions.
+Utilizing Alt All Responses events helps in managing and controlling external interactions more effectively, ensuring that remote access aligns with organizational policies and operational strategies.
+Sample Use Cases:
+Security and Compliance Verification:
+Scenario: Ensure that requests to remote paths comply with security and compliance policies.
+Implementation: Implement validation checks that assess the request against security and compliance standards. If the request does not meet the criteria, modify the response or block access entirely.
+Dynamic Request Redirection:
+Scenario: Redirect requests to different endpoints based on specific conditions (e.g., load balancing, resource availability).
+Implementation: Modify the remote path in the request to redirect it to an alternative endpoint. This can be based on factors like current server load, geographic location, or maintenance status of the primary endpoint.
+Content Caching and Shortcut Responses:
+Scenario: Serve cached responses to improve performance and reduce load on remote servers.
+Implementation: Check if the requested content is available in a local cache. If so, intercept the request and deliver the cached response instead of fetching it from the remote path.
+Custom Error Handling:
+Scenario: Provide customized error responses based on specific conditions or criteria.
+Implementation: Anticipate potential errors by implementing checks before reaching the remote path. Generate detailed, user-friendly error messages or alternative suggestions if an issue is detected.
+Access Control and Authorization:
+Scenario: Enforce additional access controls or authorization checks before making remote requests.
+Implementation: Verify user permissions and roles to ensure that they are authorized to access the remote resource. If unauthorized, block the request and return an appropriate response.
+Network Optimization:
+Scenario: Optimize network usage by routing requests based on real-time metrics or proximity.
+Implementation: Utilize network-aware logic to determine the optimal route for the request, potentially redirecting it to a closer or less-congested endpoint before reaching the remote path.
+Usage Analytics and Monitoring:
+Scenario: Track and log requests to remote paths for analytics and monitoring purposes.
+Implementation: Record details about remote requests, capturing data such as the user, timestamp, and requested resource. Use this information for analysis and reporting.
+Conditional Preprocessing:
+Scenario: Modify or preprocess requests based on specific business rules before they are sent to the remote path.
+Implementation: Implement logic to add headers, adjust query parameters, or attach additional data to the request based on predefined rules or conditions.
+Maintenance Mode Responses:
+Scenario: Provide alternative responses or redirect requests if the remote repository is undergoing maintenance.
+Implementation: Detect if the remote repository is under maintenance and generate an alternative response, such as redirecting users to a maintenance page or a backup resource.
+Geolocation-Based Restrictions:
+Scenario: Enforce restrictions on requests based on the geographic location of the requester.
+Implementation: Implement geolocation checks to verify if the request adheres to location-based policies. If the request originates from a restricted region, block it and return a suitable response.
+Dependency and Compatibility Checks:
+Scenario: Ensure that the request to the remote path does not introduce compatibility issues.
+Implementation: Implement dependency checks to validate that the requested resource is compatible with existing dependencies. If potential conflicts are found, alter the request or provide an alternative response.
+Pre-Approval and Workflow Integration:
+Scenario: Require approval or perform additional workflow steps before proceeding with the remote request.
+Implementation: Trigger pre-approval workflows or integration steps that validate or modify the request based on business requirements before allowing it to reach the remote path.
+By leveraging Alt All Responses events, organizations can dynamically manage and control remote interactions, ensuring that each request is handled according to their specific operational needs and policies. This proactive approach enhances overall security, compliance, and efficiency in managing remote access within Artifactory.
+
+
+
+
+After Download Error Events in Artifactory
+Description:
+After Download Error events in Artifactory are triggered when an error occurs during the download process of an artifact. These events allow users to implement custom responses or workflows to handle the errors effectively, such as logging, notifications, retries, or alternative actions. By leveraging After Download Error events, organizations can enhance error handling, improve user experience, and ensure that issues are promptly addressed and resolved.
+Utilizing After Download Error events helps in maintaining robust and resilient download processes, ensuring that errors do not go unnoticed and appropriate measures are taken to mitigate and rectify problems.
+Sample Use Cases:
+Error Logging and Monitoring:
+Scenario: Maintain an audit trail of download errors for diagnostics and monitoring.
+Implementation: Trigger a logging mechanism that records details of the download error, including artifact name, error type, user who initiated the download, and timestamp. Store this information in a log system for future analysis and troubleshooting.
+Notifications to Stakeholders:
+Scenario: Notify relevant teams or stakeholders when a download error occurs.
+Implementation: Send notifications via email or messaging platforms (e.g., Slack) to inform team members or stakeholders about the download error, facilitating timely investigation and resolution.
+Automated Retry Mechanism:
+Scenario: Automatically retry the download a specified number of times after encountering an error.
+Implementation: Implement a retry mechanism that attempts to redownload the artifact a preconfigured number of times before giving up. Log each retry attempt and its outcome for further analysis.
+Escalation Procedures:
+Scenario: Trigger an escalation process if critical download errors persist.
+Implementation: Define critical errors or thresholds that, when met, trigger an escalation workflow. This may involve notifying upper management or bringing in additional resources to resolve the issue.
+Alternative Download Sources:
+Scenario: Redirect the download request to alternative sources if the primary source fails.
+Implementation: When a download error occurs, automatically attempt to fetch the artifact from a secondary or backup repository. Log the redirection and notify users if alternative sources are used.
+User Feedback and Guidance:
+Scenario: Provide users with detailed error messages and guidance on next steps.
+Implementation: Customize the error messages to include detailed information about the cause of the error and steps users can take to resolve or work around the issue.
+Testing and Quality Assurance:
+Scenario: Trigger automated tests to isolate and diagnose the cause of the download error.
+Implementation: Initiate a suite of diagnostic tests or quality assurance processes to identify potential issues with the artifact or download process. Report the findings and suggested fixes to relevant stakeholders.
+Compliance and Security Checks:
+Scenario: Ensure that download errors do not compromise security or compliance.
+Implementation: Implement validation checks to assess if the download error relates to compliance or security violations. If so, enforce additional review and logging requirements and notify the compliance department.
+Custom Error Handling Workflows:
+Scenario: Implement custom workflows tailored to specific error types or conditions.
+Implementation: Define custom workflows that vary based on the nature of the download error. For example, network-related issues might trigger network diagnostics, while permission-related errors might initiate access reviews.
+Error Trend Analysis:
+Scenario: Analyze errors over time to identify recurring issues and trends.
+Implementation: Collect and analyze error logs to identify patterns or trends in download errors. Use this data to perform root cause analysis and implement systemic fixes to reduce the frequency of errors.
+Resource Allocation Adjustments:
+Scenario: Adjust resource allocations in response to download errors to avoid future issues.
+Implementation: Monitor download errors that relate to resource constraints (e.g., bandwidth, storage). Adjust allocations or optimize configurations to address these constraints and improve download reliability.
+By leveraging After Download Error events, organizations can respond to download issues proactively, ensuring that errors are managed efficiently and effectively. This approach enhances the resilience of artifact management systems, improves user satisfaction, and maintains operational continuity within Artifactory.
+
+
+
+
+Before Directory Replication Events in Artifactory
+Description:
+Before Directory Replication events in Artifactory are triggered immediately before a directory is replicated to another instance of Artifactory. These events allow users to implement custom logic, validations, and checks to ensure that directory replications comply with organizational policies and requirements. By leveraging Before Directory Replication events, organizations can control and manage the replication process, prevent unauthorized or unnecessary replications, and enforce compliance and security standards.
+Utilizing Before Directory Replication events helps maintain a robust and controlled artifact management environment, ensuring that directory replications are done appropriately and under the right conditions.
+Sample Use Cases:
+Conditional Replication Control:
+Scenario: Prevent the replication of specific directories based on their properties or contents.
+Implementation: Implement logic to inspect the properties or contents of the directory before replication. If certain conditions (e.g., the presence of specific files, or directory size) are met, block the replication and log the event.
+Instance-Based Restrictions:
+Scenario: Allow or disallow directory replication based on the source or target Artifactory instance.
+Implementation: Check the source and target instance identifiers before proceeding with replication. If the replication involves restricted instances (e.g., from a staging instance to a production instance), deny the replication and notify relevant stakeholders.
+User and Role-Based Permissions:
+Scenario: Ensure that only authorized users or roles can replicate directories.
+Implementation: Verify the user permissions and roles initiating the replication request. If the user does not have the necessary permissions, block the replication and log the attempt for further review.
+Compliance and Security Policies:
+Scenario: Ensure that the replication process complies with security and regulatory standards.
+Implementation: Implement checks to validate that the directory contents and replication process adhere to security and compliance policies. If any violations are detected, halt the replication and trigger alerts for the security team.
+Content Validation and Inspection:
+Scenario: Inspect the directory's content to ensure it contains only allowed file types and sizes.
+Implementation: Implement content inspection to validate that all files within the directory meet the allowed types and size criteria. If any disallowed content is found, prevent the replication and notify the user.
+Quota Management:
+Scenario: Manage and enforce storage quotas for directory replications.
+Implementation: Check the available storage and quotas before initiating the replication. If the replication would exceed any predefined quotas, block the replication and inform the user of the quota limits.
+Pre-Approval Workflows:
+Scenario: Require managerial or automated pre-approval before replicating certain directories.
+Implementation: Trigger a pre-approval workflow for specific directories or replication contexts. If approval is not granted, prevent the replication and notify the requester.
+Dependency and Compatibility Checks:
+Scenario: Ensure that the directory replication does not introduce conflicts or compatibility issues.
+Implementation: Perform dependency checks and compatibility analysis before replication to ensure that the directory contents do not conflict with existing artifacts. If conflicts are found, block the replication and suggest alternative actions.
+Network and Performance Optimization:
+Scenario: Optimize network usage and balance load during directory replication.
+Implementation: Implement network optimization strategies such as load balancing or throttling to ensure efficient resource utilization. If network conditions are suboptimal, delay replication or redirect to a less congested route.
+Audit Logging and Monitoring:
+Scenario: Maintain a detailed log of directory replication attempts for compliance and monitoring.
+Implementation: Record details such as directory name, source and target instances, user initiating replication, timestamp, and the outcome of the replication attempt. Use these logs for audits and continuous improvement.
+Custom Tagging and Metadata Enrichment:
+Scenario: Automatically apply tags or enrich metadata for directories before replication.
+Implementation: Implement mechanisms to tag directories or enrich their metadata with relevant information before replication. This helps in organization and searchability within the target repository.
+Error Handling and Notifications:
+Scenario: Handle errors and notify relevant parties if the replication cannot proceed.
+Implementation: Implement error handling logic to catch and respond to issues that prevent replication. Notify relevant stakeholders about the nature of the error and possible corrective actions.
+By leveraging Before Directory Replication events, organizations can implement comprehensive control and validation measures, ensuring that directory replications are performed securely, efficiently, and in compliance with policies. This proactive approach enhances data integrity, operational efficiency, and governance within Artifactory.
+
+
+
+
+Before Delete Events in Artifactory
+Description:
+Before Delete events in Artifactory are triggered immediately before an artifact is deleted from the repository. These events provide an opportunity for users to enforce custom logic, validations, and conditions to ensure that deletions are compliant with organizational policies and requirements. By leveraging Before Delete events, organizations can prevent unauthorized or inappropriate deletions, ensure that necessary checks are performed, and maintain the integrity and security of their artifact storage.
+Utilizing Before Delete events helps maintain a controlled and secure environment for artifact management, ensuring that deletions happen only when appropriate and under the right conditions.
+Sample Use Cases:
+Conditional Deletion Control:
+Scenario: Prevent the deletion of specific artifacts based on their metadata or properties.
+Implementation: Implement logic to inspect the metadata or properties of the artifact before allowing the deletion. If certain conditions (e.g., specific property values or tags) are met, block the deletion and log the event.
+User and Role-Based Permissions:
+Scenario: Restrict deletion capabilities to authorized users or roles within the organization.
+Implementation: Verify the user permissions and roles initiating the deletion request. If the user lacks the necessary permissions, deny the deletion request and log the attempt for further review.
+Compliance and Security Policies:
+Scenario: Ensure that artifact deletion complies with security and regulatory requirements.
+Implementation: Perform compliance and security checks before allowing the deletion. If the artifact deletion violates any compliance or security policies, prevent the deletion and alert the relevant teams.
+Dependency and Impact Analysis:
+Scenario: Prevent the deletion of artifacts that are dependencies for other artifacts or systems.
+Implementation: Implement logic to perform dependency analysis before deletion. If the artifact is a dependency for other artifacts or critical systems, block the deletion and notify the user.
+Archiving and Backup:
+Scenario: Ensure that artifacts are archived or backed up before they are deleted.
+Implementation: Trigger an archiving or backup process to save a copy of the artifact before proceeding with the deletion. If the backup process fails, block the deletion and notify the user of the issue.
+Pre-Approval Workflows:
+Scenario: Require managerial or automated pre-approval before deleting certain artifacts.
+Implementation: Implement a pre-approval workflow for specific types of artifacts or deletion contexts. If approval is not granted, prevent the deletion and inform the requester of the decision.
+Quota and Resource Management:
+Scenario: Manage and enforce quotas related to artifact deletions.
+Implementation: Check current usage against defined quotas for deletions. If the deletion would violate resource management policies, block the deletion and notify the user.
+Audit Logging and Monitoring:
+Scenario: Maintain a detailed log of all deletion attempts for compliance and monitoring.
+Implementation: Record details such as artifact name, user initiating the deletion, timestamp, and the outcome of the deletion request. Use these logs for audits and continuous improvement.
+Error Handling and Notifications:
+Scenario: Handle errors gracefully and notify relevant parties if deletion cannot proceed.
+Implementation: Implement error handling logic to respond to issues preventing deletion. Notify relevant stakeholders about the nature of the error and possible corrective actions.
+Custom Tagging and Metadata Enrichment:
+Scenario: Apply tags or update metadata before deletion based on specific criteria.
+Implementation: Implement mechanisms to tag or update the metadata of artifacts before they are deleted, ensuring proper documentation and traceability.
+Handling Special Artifacts:
+Scenario: Develop special handling processes for specific types of artifacts (e.g., deprecated, experimental).
+Implementation: Define criteria for special artifacts and create custom handling logic that might allow or restrict deletion based on their status or type.
+Continuous Integration/Continuous Deployment (CI/CD) Integration:
+Scenario: Ensure artifact deletion integrates smoothly with CI/CD pipelines.
+Implementation: Trigger checks that confirm the deletion will not disrupt ongoing CI/CD processes. If deletion might affect the pipeline, block the deletion and notify the CI/CD team.
+By implementing Before Delete events, organizations can introduce robust control measures to safeguard their repositories, ensuring that artifact deletions are executed according to organizational policies and best practices. This proactive approach enhances data integrity, security, and efficient artifact management within Artifactory.
+Before Download Events in Artifactory
+Description:
+Before Download events in Artifactory are triggered immediately before Artifactory executes a download request for an artifact. These events provide an opportunity for users to implement custom logic, validations, and checks to ensure compliance with organizational policies and requirements before any data is transferred. By leveraging Before Download events, organizations can prevent unauthorized downloads, enforce security and compliance policies, and optimize network and resource usage.
+Utilizing Before Download events helps in maintaining robust control over the download process, ensuring that downloads are authorized and compliant with operational standards.
+Sample Use Cases:
+User Permission Verification:
+Scenario: Ensure that only authorized users can download specific artifacts.
+Implementation: Verify user permissions and roles before allowing the download. If the user lacks the necessary access rights, deny the download request and log the attempt for audit purposes.
+Compliance and Security Checks:
+Scenario: Enforce security and regulatory policies before allowing downloads.
+Implementation: Implement compliance and security checks to validate that the artifact and the download request comply with organizational policies. If the request fails the checks, block the download and alert the relevant compliance team.
+Access Control and Rate Limiting:
+Scenario: Implement rate limiting to control the frequency of downloads by a user.
+Implementation: Track the number and frequency of download requests for each user and implement rate limiting. If a user exceeds the allowed rate, block further downloads and notify the user of the limit.
+File Type and Size Validation:
+Scenario: Restrict downloads based on file type and size.
+Implementation: Validate the file type and size before allowing the download. If the file does not meet the allowed criteria, block the download and inform the user.
+Network Optimization and Load Balancing:
+Scenario: Optimize network usage by balancing download requests across servers.
+Implementation: Implement load balancing strategies to distribute download requests across multiple servers based on current load and network conditions. Redirect the request to a less congested server if necessary.
+Dependency and Compatibility Checks:
+Scenario: Ensure that the artifact being downloaded does not conflict with existing dependencies.
+Implementation: Perform dependency checks before allowing the download to ensure compatibility with existing artifacts. If conflicts are detected, block the download and provide suggestions for resolution.
+Caching and Local Availability:
+Scenario: Serve cached artifacts to reduce load on remote repositories.
+Implementation: Check if the requested artifact is available in a local cache. If so, serve the cached version instead of initiating a new download from the remote repository.
+Audit Logging and Monitoring:
+Scenario: Maintain an audit trail of all download requests for compliance and monitoring.
+Implementation: Log details such as artifact name, user initiating the download, timestamp, and the outcome of the request. Use these logs for audits and continuous monitoring.
+Custom Notification and Alerting:
+Scenario: Notify stakeholders when specific artifacts are being downloaded.
+Implementation: Trigger notifications via email or messaging platforms (e.g., Slack) to inform relevant team members about the download request, especially for critical or sensitive artifacts.
+Pre-Approval Workflows:
+Scenario: Require managerial or automated pre-approval before allowing certain downloads.
+Implementation: Implement a pre-approval workflow for specific types of artifacts or download contexts. If approval is not granted, block the download and inform the requester of the decision.
+Content Inspection:
+Scenario: Scan the artifact for any harmful or unauthorized contents before download.
+Implementation: Use content inspection tools to analyze the artifact. If harmful or unauthorized content is detected, block the download and notify the security team.
+Dynamic Tagging and Metadata Updates:
+Scenario: Update artifact metadata or tags based on the download request context.
+Implementation: Automatically modify the artifact's metadata or apply tags to reflect details related to the download request, enhancing organization and traceability.
+By leveraging Before Download events, organizations can exercise granular control over the download process, ensuring that each download request is compliant, secure, and optimized. This proactive approach enhances data integrity, security, and efficient artifact management within Artifactory.
+Before Copy Events in Artifactory
+Description:
+Before Copy events in Artifactory are triggered immediately before an artifact is copied from one location to another within the Artifactory storage. These events provide an opportunity for users to implement custom logic, validations, and conditions to ensure that artifact copies are compliant with organizational policies and requirements. By leveraging Before Copy events, organizations can prevent unauthorized or inappropriate copies, ensure that necessary checks are performed, and maintain the integrity and security of their artifact storage.
+Utilizing Before Copy events helps maintain a controlled and secure environment for artifact management, ensuring that copies happen only when appropriate and under the right conditions.
+Sample Use Cases:
+User Permission Verification:
+Scenario: Ensure that only authorized users can copy specific artifacts.
+Implementation: Verify the user permissions and roles before allowing the copy. If the user lacks the necessary access rights, deny the copy request and log the attempt for audit purposes.
+Conditional Copy Control:
+Scenario: Prevent the copying of specific artifacts based on their metadata or properties.
+Implementation: Implement logic to inspect the metadata or properties of the artifact before allowing the copy. If certain conditions (e.g., specific property values or tags) are met, block the copy and log the event.
+Compliance and Security Policies:
+Scenario: Ensure that artifact copying complies with security and regulatory requirements.
+Implementation: Perform compliance and security checks before allowing the copy. If the artifact copy violates any compliance or security policies, prevent the copy and alert the relevant teams.
+Dependency and Impact Analysis:
+Scenario: Prevent the copying of artifacts that are dependencies for other artifacts or systems.
+Implementation: Implement logic to perform dependency analysis before copying. If the artifact is a dependency for other artifacts or critical systems, block the copy and notify the user.
+Quota and Resource Management:
+Scenario: Manage and enforce quotas related to artifact copies.
+Implementation: Check current usage against defined quotas for copies. If the copy would violate resource management policies, block the copy and notify the user.
+Pre-Approval Workflows:
+Scenario: Require managerial or automated pre-approval before copying certain artifacts.
+Implementation: Implement a pre-approval workflow for specific types of artifacts or copying contexts. If approval is not granted, prevent the copy and inform the requester of the decision.
+Custom Notification and Alerts:
+Scenario: Notify stakeholders when specific artifacts are being copied.
+Implementation: Trigger notifications via email or messaging platforms (e.g., Slack) to inform relevant team members about the copy request, especially for critical or sensitive artifacts.
+Audit Logging and Monitoring:
+Scenario: Maintain a detailed log of all copy attempts for compliance and monitoring.
+Implementation: Record details such as artifact name, user initiating the copy, timestamp, and the outcome of the copy request. Use these logs for audits and continuous monitoring.
+Content Validation and Inspection:
+Scenario: Inspect the artifact's content to ensure it meets required standards before copying.
+Implementation: Implement content inspection to validate that the artifact's content complies with organizational standards. If any issues are found, prevent the copy and notify the user.
+Network and Performance Optimization:
+Scenario: Optimize network usage and performance during the copy process.
+Implementation: Implement strategies to manage network and performance impacts, such as scheduling the copy for off-peak hours or adjusting transfer rates to minimize disruption.
+Error Handling and Notifications:
+Scenario: Handle errors gracefully and notify relevant parties if copying cannot proceed.
+Implementation: Implement error handling logic to respond to issues preventing the copy. Notify relevant stakeholders about the nature of the error and possible corrective actions.
+Dynamic Tagging and Metadata Updates:
+Scenario: Apply tags or update metadata before copying an artifact based on specific criteria.
+Implementation: Implement mechanisms to tag or update the metadata of artifacts before they are copied, ensuring proper documentation and traceability.
+Handling Special Artifacts:
+Scenario: Develop special handling processes for specific types of artifacts (e.g., deprecated, experimental).
+Implementation: Define criteria for special artifacts and create custom handling logic that might allow or restrict copying based on their status or type.
+Continuous Integration/Continuous Deployment (CI/CD) Integration:
+Scenario: Ensure artifact copying integrates smoothly with CI/CD pipelines.
+Implementation: Trigger checks that confirm the copy will not disrupt ongoing CI/CD processes. If copying might affect the pipeline, block the copy and notify the CI/CD team.
+By implementing Before Copy events, organizations can introduce robust control measures to safeguard their repositories, ensuring that artifact copies are executed according to organizational policies and best practices. This proactive approach enhances data integrity, security, and efficient artifact management within Artifactory.
+Alt Remote Content Events in Artifactory
+Description:
+Alt Remote Content events in Artifactory are triggered before Artifactory attempts to access and retrieve content from a remote path. These events provide an opportunity to intercept, modify, or handle requests to remote repositories in a dynamic manner. By leveraging Alt Remote Content events, users can enforce security measures, optimize network usage, ensure compliance with policies, and provide alternative responses or redirects based on specific conditions.
+Utilizing Alt Remote Content events helps maintain control over remote interactions, ensuring that remote access requests align with organizational policies and operational strategies.
+Sample Use Cases:
+Content Validation and Security Checks:
+Scenario: Ensure that requests to remote content comply with security policies.
+Implementation: Implement validation and security checks that inspect the request for compliance with organizational policies before accessing the remote path. If the request does not meet the criteria, block access or modify the response.
+Dynamic Request Redirection:
+Scenario: Redirect requests to alternative URLs or endpoints based on conditions such as load balancing, resource availability, or user location.
+Implementation: Modify the remote path in the request to redirect it to an alternative location if specific conditions are met. This ensures optimized network usage and resource management.
+Content Caching and Delivery Optimization:
+Scenario: Serve cached content for frequently accessed remote paths to reduce latency and load on remote servers.
+Implementation: Check if the requested content is available in a local cache. If so, deliver the cached content instead of accessing the remote path, improving performance and reducing external dependencies.
+Custom Error Handling:
+Scenario: Provide customized error responses or alternative actions based on specific conditions.
+Implementation: Anticipate potential errors by implementing checks before reaching the remote path. Generate detailed, user-friendly error messages or alternative actions if an issue is detected.
+Access Control and Authorization:
+Scenario: Enforce additional access controls or authorization checks before making remote content requests.
+Implementation: Verify user permissions and roles to ensure that they are authorized to access the remote content. If unauthorized, block the request and return an appropriate response.
+Network and Performance Optimization:
+Scenario: Optimize network usage and balance traffic based on real-time metrics or proximity to the closest server.
+Implementation: Utilize network-aware logic to determine the optimal route for the request, potentially redirecting it to a less congested or geographically closer server before reaching the remote path.
+Usage Analytics and Monitoring:
+Scenario: Track and log requests to remote content for analytics and monitoring purposes.
+Implementation: Record details about each remote request, capturing data such as user information, timestamp, and requested resource. Use this data for analysis and reporting to monitor usage patterns and system performance.
+Conditional Preprocessing:
+Scenario: Modify or preprocess requests based on specific business rules before they are sent to the remote path.
+Implementation: Implement logic to add headers, adjust query parameters, or attach additional data to the request based on predefined rules or conditions.
+Maintenance Mode Responses:
+Scenario: Provide alternative responses or redirect requests if the remote repository is undergoing maintenance.
+Implementation: Detect if the remote repository is under maintenance and generate an alternative response, such as redirecting users to a maintenance page or a backup resource.
+Geolocation-Based Restrictions:
+Scenario: Enforce restrictions on requests based on the geographic location of the requester.
+Implementation: Implement geolocation checks to verify if the request adheres to location-based policies. If the request originates from a restricted region, block it and return a suitable response.
+Integration with External Systems:
+Scenario: Synchronize or notify external systems of remote content access attempts.
+Implementation: Trigger webhooks or API calls to external systems to update, synchronize, or notify them of the remote content access attempt. This ensures data consistency across integrated systems.
+Content Inspection and Validation:
+Scenario: Ensure that the content retrieved from the remote path meets organizational standards.
+Implementation: Implement mechanisms to inspect and validate content retrieved from the remote path. If the content does not meet the standards, prevent its use and notify the relevant teams.
+By leveraging Alt Remote Content events, organizations can dynamically manage and control remote interactions, ensuring that each request is handled according to specific operational needs and policies. This proactive approach enhances overall security, compliance, and efficiency in managing remote access within Artifactory.
+Before Delete Replication Events in Artifactory
+Description:
+Before Delete Replication events in Artifactory are triggered immediately before a delete action is replicated from one Artifactory instance to another. These events provide an opportunity to enforce custom logic, validations, and rules to ensure that deletion replications are compliant with organizational policies and conditions. By leveraging Before Delete Replication events, organizations can prevent unauthorized or inappropriate deletions being propagated across instances, thus enhancing security, compliance, and operational integrity.
+Utilizing Before Delete Replication events helps maintain control and consistency across multiple Artifactory instances, ensuring that deletion actions are replicated only when appropriate.
+Sample Use Cases:
+Replication Control Based on Conditions:
+Scenario: Prevent the replication of delete actions for specific artifacts based on their properties, such as tags or metadata.
+Implementation: Implement logic to inspect the properties or metadata of the artifact before allowing the deletion to be replicated. If certain conditions (e.g., specific tags or metadata values) are met, block the replication and log the event.
+Instance-Based Restrictions:
+Scenario: Restrict delete replication actions based on the source or target Artifactory instance.
+Implementation: Check the identifiers of the source and target instances before allowing the deletion replication. If the deletion is intended for a restricted instance (e.g., production), prevent the replication and notify the user or admin.
+User and Role-Based Permissions:
+Scenario: Ensure that only authorized users or roles can propagate delete actions across instances.
+Implementation: Verify user permissions and roles before replicating the delete action. If the user does not have the necessary permissions, block the replication and log the attempt for further review.
+Compliance and Security Policies:
+Scenario: Enforce compliance and security policies during the replication of delete actions.
+Implementation: Implement checks to ensure that the deletion replication adheres to organizational compliance and security standards. If the deletion replication violates any policies, prevent the replication and alert the relevant teams.
+Dependency and Impact Analysis:
+Scenario: Prevent the replication of delete actions that would impact dependent artifacts.
+Implementation: Perform dependency analysis to check if the artifact being deleted is required by other artifacts or systems. If dependencies are found, block the replication and notify the user of potential impacts.
+Approval Workflows:
+Scenario: Require managerial or automated pre-approval before allowing delete replications.
+Implementation: Trigger an approval workflow for specific types of artifacts or replication scenarios. If approval is not granted, prevent the replication of the delete action and inform the requester.
+Audit Logging and Monitoring:
+Scenario: Maintain a detailed log of delete replication attempts for auditing and monitoring.
+Implementation: Record details such as artifact name, user initiating the delete action, source and target instances, timestamp, and outcome of the replication attempt. Use these logs for compliance audits and monitoring.
+Quota and Resource Management:
+Scenario: Manage and enforce quotas related to deletion actions across instances.
+Implementation: Check current usage against defined quotas for deletions. If the replication of the delete action would violate resource management policies, block the replication and notify the user.
+Custom Notifications and Alerts:
+Scenario: Notify stakeholders of delete replication attempts, especially for critical artifacts.
+Implementation: Send notifications via email or messaging platforms (e.g., Slack) to inform relevant team members about the replication of delete actions, particularly for sensitive or critical artifacts.
+Error Handling and Notifications:
+Scenario: Handle errors gracefully and notify relevant parties if replication cannot proceed.
+Implementation: Implement error handling logic to respond to issues preventing the replication. Notify relevant stakeholders about the nature of the error and possible corrective actions.
+Retention Policies Enforcement:
+Scenario: Ensure that artifacts scheduled for deletion are not protected by retention policies.
+Implementation: Implement checks to verify if the artifacts are under retention policies before replicating the deletion. If so, block the replication and notify the relevant teams for further review.
+Pre-Sync Validation:
+Scenario: Ensure that pre-sync conditions between instances are validated before replicating delete actions.
+Implementation: Validate pre-sync conditions to confirm that both instances are ready for replication. If any condition is not met, block the delete replication and notify the relevant stakeholders.
+By implementing Before Delete Replication events, organizations can ensure that deletion actions are propagated across instances in a controlled and compliant manner. This proactive approach enhances data integrity, security, and operational efficiency within Artifactory.
+After Remote Download Events in Artifactory
+Description:
+After Remote Download events in Artifactory are triggered immediately after the system completes a remote download of an artifact. These events allow users to implement custom actions or workflows in response to the successful retrieval of content from a remote repository. By leveraging After Remote Download events, organizations can enhance their post-download processes, such as logging, notifications, security scans, and integrations with other systems.
+Utilizing After Remote Download events helps in maintaining a robust and automated environment for artifact management, ensuring that all necessary follow-up actions are seamlessly executed.
+Sample Use Cases:
+Audit Logging:
+Scenario: Maintain a comprehensive log of all remote downloads for compliance and monitoring.
+Implementation: Trigger a logging mechanism that records details of the download, including the artifact name, source repository, user who initiated the download, and timestamp. Store this information in an audit log system for future reference and analysis.
+Security Scanning:
+Scenario: Perform security scans on downloaded artifacts to ensure they are free from vulnerabilities or malicious content.
+Implementation: Automatically initiate a security scanning tool to analyze the newly downloaded artifact. If any threats are detected, quarantine the artifact and alert the security team.
+Notifications to Stakeholders:
+Scenario: Notify relevant teams or stakeholders when specific artifacts are downloaded from remote repositories.
+Implementation: Send notifications via email or messaging platforms (e.g., Slack) to inform team members or stakeholders about the remote download, especially for critical or highly-regulated artifacts.
+Dependency Updates:
+Scenario: Update dependency records or configurations to reflect newly downloaded artifacts.
+Implementation: Automatically update any dependency files, build configurations, or other related artifacts to include references to the newly downloaded asset, ensuring consistency in development environments.
+Custom Tagging and Metadata Updates:
+Scenario: Apply tags or update metadata for downloaded artifacts to improve organization and searchability.
+Implementation: Implement mechanisms to automatically tag the artifact or enrich its metadata with relevant information, such as download source, version, and associated project.
+Content Verification:
+Scenario: Verify the integrity and authenticity of the downloaded content before further use.
+Implementation: Implement checksum or digital signature verification to ensure that the downloaded content matches the expected values. If discrepancies are found, block the artifact from use and notify relevant parties.
+Integration with External Systems:
+Scenario: Synchronize download activities with external systems like CMDBs (Configuration Management Databases) or asset management tools.
+Implementation: Use the event to trigger webhooks or API calls to update external systems with details of the newly downloaded artifact, ensuring data consistency and integration across platforms.
+Post-Download Processing:
+Scenario: Initiate additional processing tasks, such as extraction, transformation, or loading of downloaded content.
+Implementation: Automatically trigger processing workflows that perform additional tasks, such as extracting files from an archive, transforming data into required formats, or loading content into databases.
+Quality Assurance and Testing:
+Scenario: Automatically trigger quality assurance or testing processes for newly downloaded artifacts.
+Implementation: Integrate with testing frameworks to run automated or manual tests on the downloaded content, ensuring it meets quality standards and works as intended before use in production.
+Version Control Integration:
+Scenario: Link downloaded artifacts to version control systems for traceability.
+Implementation: Update version control repositories with details of the downloaded content, including commit hashes, branch names, and change logs, to ensure full traceability and version consistency.
+Monitoring and Analytics:
+Scenario: Gather data and insights on remote download activities for performance monitoring and reporting.
+Implementation: Capture download metrics and feed the data into analytics tools to generate reports on download frequencies, user activities, and usage patterns.
+Storage and Resource Management:
+Scenario: Manage storage and resource allocations based on new downloads.
+Implementation: Automatically adjust storage allocations or optimize resource management to account for the newly downloaded artifacts, ensuring efficient utilization of storage and other resources.
+By leveraging After Remote Download events, organizations can ensure a comprehensive and automated response to the retrieval of remote artifacts, enhancing efficiency, security, and compliance within their artifact management workflows in Artifactory.
+Alt Remote Path Events in Artifactory
+Description:
+Alt Remote Path events in Artifactory are triggered before the system attempts to access and retrieve content from a remote path. These events allow users to intercept, modify, or handle requests to remote repositories dynamically based on specific criteria or business rules. By leveraging Alt Remote Path events, organizations can enforce security measures, optimize network usage, ensure compliance, provide alternative content, or redirect requests as needed.
+Utilizing Alt Remote Path events helps maintain control over remote interactions, ensuring that requests align with organizational policies and operational strategies.
+Sample Use Cases:
+Dynamic Request Redirection:
+Scenario: Redirect requests to different remote URLs or endpoints based on conditions like server load, geographic location, or user role.
+Implementation: Modify the remote path in the request to redirect it to an alternative location if certain conditions are met. This helps achieve load balancing, optimize resource utilization, or adhere to specific policies.
+Content Caching and Delivery Optimization:
+Scenario: Serve cached content for frequently accessed remote paths to improve performance and reduce load on remote servers.
+Implementation: Check if the requested content is available in a local cache. If so, intercept the request and deliver the cached content instead of reaching out to the remote path, enhancing response times and reducing external dependencies.
+Access Control and Authorization:
+Scenario: Enforce additional access controls or authorization checks before making requests to remote paths.
+Implementation: Verify user permissions and roles to ensure they are authorized to access the remote content. If unauthorized, block the request and provide an appropriate error message.
+Security and Compliance Verification:
+Scenario: Ensure that requests to remote paths comply with security and compliance policies.
+Implementation: Implement validation checks that assess the request against security and compliance standards. If the request does not meet the criteria, modify the response or block access.
+Custom Error Handling:
+Scenario: Provide customized error responses or alternative actions based on specific conditions.
+Implementation: Anticipate potential errors by implementing checks before reaching the remote path. Generate detailed, user-friendly error messages or alternative actions if an issue is detected.
+Network and Performance Optimization:
+Scenario: Optimize network usage and balance traffic based on real-time metrics or proximity.
+Implementation: Utilize network-aware logic to determine the optimal route for the request, potentially redirecting it to a closer or less-congested server before reaching the remote path.
+Usage Analytics and Monitoring:
+Scenario: Track and log requests to remote paths for analytics and monitoring purposes.
+Implementation: Record details about each remote request, capturing data such as user information, timestamp, and requested resource. Use this data for analysis and reporting to monitor usage patterns and system performance.
+Conditional Preprocessing:
+Scenario: Modify or preprocess requests based on specific business rules before they are sent to the remote path.
+Implementation: Implement logic to add headers, adjust query parameters, or attach additional data to the request based on predefined rules or conditions.
+Maintenance Mode Responses:
+Scenario: Provide alternative responses or redirect requests if the remote repository is undergoing maintenance.
+Implementation: Detect if the remote repository is under maintenance and generate an alternative response, such as redirecting users to a maintenance page or a backup resource.
+Geolocation-Based Restrictions:
+Scenario: Enforce restrictions on requests based on the geographic location of the requester.
+Implementation: Implement geolocation checks to verify if the request adheres to location-based policies. If the request originates from a restricted region, block it and return a suitable response.
+Integration with External Systems:
+Scenario: Synchronize or notify external systems of remote path access attempts.
+Implementation: Trigger webhooks or API calls to external systems to update, synchronize, or notify them of the remote path access attempt. This ensures data consistency across integrated systems.
+Content Inspection and Validation:
+Scenario: Ensure that the content retrieved from the remote path meets organizational standards.
+Implementation: Implement mechanisms to inspect and validate content retrieved from the remote path. If the content does not meet the standards, prevent its use and notify the relevant teams.
+By leveraging Alt Remote Path events, organizations can dynamically manage and control remote interactions, ensuring that each request is handled according to specific operational needs and policies. This proactive approach enhances overall security, compliance, and efficiency in managing remote access within Artifactory.
+Before Download Request Events in Artifactory
+Description:
+Before Download Request events in Artifactory are triggered after a download request has passed all of Artifactory’s initial filters, such as authentication and authorization, but before the request is executed against the repositories. These events provide an opportunity for users to implement custom logic, additional validations, and checks to ensure compliance with organizational policies and requirements. By leveraging Before Download Request events, organizations can further refine authorization, enforce security policies, and optimize resource usage.
+Utilizing Before Download Request events helps maintain control over the download process, ensuring that all download requests are thoroughly vetted and compliant before being executed.
+Sample Use Cases:
+Additional User Permission Checks:
+Scenario: Perform further verification to ensure that users have the necessary permissions to download specific artifacts.
+Implementation: Validate the user’s role, group memberships, or additional permissions before finalizing the download request. If the user does not meet the required criteria, block the request and log the event.
+Conditional Download Control:
+Scenario: Prevent downloads based on specific conditions such as artifact properties, tags, or download history.
+Implementation: Implement logic to check artifact metadata or user download history before allowing the request to proceed. If specific conditions are met (e.g., artifact marked as "restricted"), block the request and notify the user.
+Compliance and Security Checks:
+Scenario: Ensure that the download request adheres to security and regulatory policies.
+Implementation: Perform compliance and security assessments to validate that the download request complies with established standards. If the request fails any checks, block the request and alert the relevant compliance team.
+Rate Limiting and Throttling:
+Scenario: Control the frequency of download requests to manage resource usage and prevent abuse.
+Implementation: Implement rate limiting and throttling mechanisms to monitor the number of download requests from users or IP addresses. If the rate exceeds allowed limits, block additional requests and notify the user of the limit.
+Content Filtering:
+Scenario: Enforce policies related to the types of content that can be downloaded.
+Implementation: Validate the content type, size, or other attributes before allowing the download. If the content does not meet policy requirements (e.g., file type not allowed), block the request and inform the user.
+Dynamic Request Modification:
+Scenario: Modify the download request dynamically based on specific conditions to improve performance or compliance.
+Implementation: Implement logic to adjust headers, query parameters, or other aspects of the request before it reaches the repository. For example, adding specific metadata or modifying request attributes based on user role.
+Custom Notifications:
+Scenario: Notify relevant stakeholders when certain download requests are initiated.
+Implementation: Send notifications via email or messaging platforms (e.g., Slack) to inform team members about download requests for critical or sensitive artifacts. This ensures awareness and monitoring of important activities.
+Audit Logging and Monitoring:
+Scenario: Maintain detailed logs of all download requests for compliance and monitoring purposes.
+Implementation: Record details such as artifact name, user initiating the request, timestamp, and the outcome of the request. Use these logs for audits and analysis to ensure transparency and traceability.
+Network and Performance Optimization:
+Scenario: Optimize network usage and performance for download requests.
+Implementation: Implement strategies to manage network and performance impacts, such as load balancing or scheduling download requests during off-peak hours. Adjust the request parameters to optimize performance.
+Approval Workflows:
+Scenario: Require approval before allowing certain download requests to proceed.
+Implementation: Trigger an approval workflow for specific types of artifacts or download contexts. If approval is not granted, block the request and inform the requester of the decision.
+Geolocation-Based Restrictions:
+Scenario: Enforce download restrictions based on the geographic location of the requester.
+Implementation: Implement geolocation checks to verify if the request adheres to location-based policies. If the request originates from a restricted region, block it and return a suitable response.
+Integration with External Systems:
+Scenario: Synchronize download activities with external systems or tools for additional validation.
+Implementation: Trigger webhooks or API calls to external systems for further validation or logging before finalizing the download request. This ensures data consistency and enhanced validation across integrated systems.
+By leveraging Before Download Request events, organizations can introduce additional layers of control and validation to their download processes, ensuring that every request is thoroughly vetted and compliant before being executed. This enhances security, compliance, and resource management within Artifactory.
+
+
+After Copy Events in Artifactory
+Description:
+After Copy events in Artifactory are triggered immediately after an artifact is successfully copied from one repository to another. These events allow users to implement custom actions or workflows in response to the completion of the copy operation. By leveraging After Copy events, organizations can enhance their post-copy processes, such as triggering CI/CD pipelines, updating metadata, notifying stakeholders, and integrating with external systems.
+Utilizing After Copy events helps ensure that all necessary follow-up actions are seamlessly executed, improving operational efficiency and data management practices within Artifactory.
+Sample Use Cases:
+Trigger CI/CD Pipelines:
+Scenario: Automatically initiate build or deployment pipelines when an artifact is copied.
+Implementation: Configure CI/CD tools (e.g., Jenkins, GitLab CI) to trigger pipelines when the After Copy event is fired. This ensures continuous integration and delivery processes are kept up-to-date with the latest artifacts.
+Audit Logging:
+Scenario: Maintain a comprehensive log of all copy operations for compliance and monitoring.
+Implementation: Trigger logging mechanisms that record details of the copy operation, including artifact name, source and target repositories, user who initiated the copy, and timestamp. Store this information in an audit log system for future reference.
+Notifications to Stakeholders:
+Scenario: Notify relevant teams or stakeholders when critical artifacts are copied.
+Implementation: Send notifications via email or messaging platforms (e.g., Slack) to inform team members or stakeholders about the copy operation, especially for critical or highly-regulated artifacts.
+Metadata Updates:
+Scenario: Update or modify metadata for the copied artifact to reflect its new location.
+Implementation: Automatically update properties and metadata, such as adding tags to indicate the new repository location or copying relevant metadata from the source artifact.
+Dependency Updates:
+Scenario: Ensure that dependency records reflect the new location of the copied artifact.
+Implementation: Automatically update dependency files, build configurations, or other related artifacts to reference the new location of the copied artifact, ensuring consistency in development environments.
+Content Validation:
+Scenario: Verify the integrity and authenticity of the copied content before further use.
+Implementation: Perform checksum or digital signature verification to ensure that the copied content matches the expected values. If discrepancies are found, block the artifact from use and notify relevant parties.
+Integration with External Systems:
+Scenario: Synchronize copy activities with external systems like CMDBs (Configuration Management Databases) or asset management tools.
+Implementation: Use the event to trigger webhooks or API calls to update external systems with details of the copied artifact, ensuring data consistency and integration across platforms.
+Custom Tagging:
+Scenario: Apply custom tags or labels to the copied artifact for better organization and searchability.
+Implementation: Automatically add tags or labels to the copied artifact based on its content, source, target repository, or other relevant information.
+Quality Assurance and Testing:
+Scenario: Automatically trigger testing or quality assurance processes for newly copied artifacts.
+Implementation: Integrate with testing frameworks to run automated or manual tests on the copied content, ensuring it meets quality standards and works as intended before use in production.
+Version Control Integration:
+Scenario: Link copied artifacts to version control systems for traceability.
+Implementation: Update version control repositories with details of the copied content, including commit hashes, branch names, and change logs, to ensure full traceability and consistency.
+Dynamic Property Assignment:
+Scenario: Assign dynamic properties based on the context of the copy operation.
+Implementation: Implement scripts to assign or update properties dynamically, based on criteria such as the time of the copy, the user initiating the copy, or the environment (e.g., development, staging, production).
+Monitoring and Analytics:
+Scenario: Gather data and insights on copy operations for performance monitoring and reporting.
+Implementation: Capture metrics related to the copy operation and feed the data into analytics tools to generate reports on copy frequencies, use patterns, and system performance.
+By leveraging After Copy events, organizations can ensure a comprehensive and automated response to artifact copy operations, enhancing efficiency, compliance, and data integrity within their artifact management workflows in Artifactory. This proactive approach improves overall operational effectiveness and coordination across teams and systems.
+
+
+
+
+Before Property Create Events in Artifactory
+Description:
+Before Property Create events in Artifactory are triggered immediately before a property is added to an artifact. These events allow users to implement custom logic, validations, and checks to ensure that properties are created in compliance with organizational policies and requirements. By leveraging Before Property Create events, organizations can prevent unauthorized property additions, enforce compliance standards, and maintain the integrity of their artifact metadata.
+Utilizing Before Property Create events helps ensure that all property creation actions are thoroughly vetted, enhancing control and security within Artifactory.
+Sample Use Cases:
+User Permission Verification:
+Scenario: Ensure that only authorized users can add properties to artifacts.
+Implementation: Verify the user's permissions and roles before allowing the property to be created. If the user lacks the necessary access rights, deny the property creation request and log the attempt for audit purposes.
+Compliance and Security Checks:
+Scenario: Enforce compliance and security policies before properties are added.
+Implementation: Implement checks to validate that the property creation action complies with organizational policies and security standards. If the request fails any checks, block the creation and alert the relevant teams.
+Conditional Property Control:
+Scenario: Prevent the creation of specific properties based on artifact metadata or context.
+Implementation: Implement logic to inspect the artifact's existing metadata or context before allowing the property to be created. If certain conditions are met (e.g., artifact marked as immutable), block the property creation and notify the user.
+Metadata Consistency Validation:
+Scenario: Ensure that the new property maintains consistency with existing metadata.
+Implementation: Validate the new property against existing properties and metadata standards. If the new property introduces inconsistencies or conflicts, prevent its creation and prompt the user to correct any issues.
+Rate Limiting and Throttling:
+Scenario: Control the rate at which properties can be added to prevent abuse.
+Implementation: Implement rate limiting mechanisms to monitor the frequency of property addition requests. If the rate exceeds allowed limits, block further requests and notify the user of the limit.
+Audit Logging and Monitoring:
+Scenario: Maintain a detailed log of all property creation attempts for compliance and monitoring.
+Implementation: Record details such as artifact name, user initiating the action, timestamp, and the outcome of the property creation request. Use these logs for audits, analysis, and continuous monitoring.
+Data Validation and Formatting:
+Scenario: Enforce data validation and formatting rules for new properties.
+Implementation: Validate the property's name and value to ensure they adhere to predefined formatting and data integrity rules. If the property fails validation, block the creation request and inform the user.
+Custom Notifications:
+Scenario: Notify relevant stakeholders when specific properties are added to artifacts.
+Implementation: Send notifications via email or messaging platforms (e.g., Slack) to inform team members or stakeholders about the addition of specific properties. This ensures visibility and awareness of important metadata changes.
+Pre-Approval Workflows:
+Scenario: Require pre-approval before allowing certain properties to be added to artifacts.
+Implementation: Implement a pre-approval workflow for specific types of properties or contexts. If approval is not granted, block the property creation request and inform the requester of the decision.
+Integration with External Systems:
+Scenario: Synchronize property creation activities with external systems for additional validation or logging.
+Implementation: Trigger webhooks or API calls to external systems to validate or log property creation activities before finalizing the request. This ensures data consistency and enhanced validation across integrated systems.
+Dynamic Property Evaluation:
+Scenario: Automatically evaluate and apply rules for dynamic property assignment.
+Implementation: Implement scripts to dynamically evaluate and assign properties based on the artifact's context, ensuring the new properties align with organizational standards and requirements.
+Content and Context Analysis:
+Scenario: Analyze artifact content and context to determine if the property should be allowed.
+Implementation: Implement content and context analysis to evaluate if adding the property aligns with the artifact's intended use or lifecycle stage. If not, block the property creation and prompt the user with appropriate feedback.
+By leveraging Before Property Create events, organizations can introduce additional layers of control and validation to the property creation process, ensuring that every property added to artifacts in Artifactory is compliant, secure, and consistent with organizational policies. This proactive approach enhances data integrity, security, and efficient metadata management within Artifactory.
+Before Move Events in Artifactory
+Description:
+Before Move events in Artifactory are triggered immediately before an artifact is moved from one repository to another within the Artifactory storage. These events allow users to implement custom logic, validations, and checks to ensure that artifact moves comply with organizational policies and requirements. By leveraging Before Move events, organizations can prevent unauthorized or inappropriate moves, enforce security and compliance standards, and maintain the integrity of their artifact management practices.
+Utilizing Before Move events helps ensure that all artifact move actions are thoroughly vetted and compliant, enhancing control, security, and operational efficiency within Artifactory.
+Sample Use Cases:
+User Permission Verification:
+Scenario: Ensure that only authorized users can move specific artifacts.
+Implementation: Verify the user's permissions and roles before allowing the move. If the user lacks the necessary access rights, deny the move request and log the attempt for audit purposes.
+Compliance and Security Checks:
+Scenario: Enforce compliance and security policies before artifacts are moved.
+Implementation: Implement compliance and security checks to validate that the move action adheres to organizational policies and standards. If the request fails any checks, block the move and alert the relevant teams.
+Conditional Move Control:
+Scenario: Prevent the moving of specific artifacts based on their metadata or properties.
+Implementation: Implement logic to inspect the artifact's metadata or properties before allowing the move. If certain conditions (e.g., artifact marked as immutable or critical) are met, block the move and notify the user.
+Dependency and Impact Analysis:
+Scenario: Ensure that moving an artifact does not impact other dependent artifacts or systems.
+Implementation: Perform dependency analysis to check if other artifacts or systems rely on the artifact being moved. If dependencies are found, block the move and provide the user with information about the potential impacts.
+Content Validation and Inspection:
+Scenario: Validate the content of the artifact to ensure it meets required standards before moving.
+Implementation: Implement content inspection to validate that the artifact meets organizational standards. If any issues are found, prevent the move and notify the user.
+Pre-Approval Workflows:
+Scenario: Require managerial or automated pre-approval before moving certain artifacts.
+Implementation: Implement a pre-approval workflow for specific types of artifacts or move contexts. If approval is not granted, prevent the move and inform the requester of the decision.
+Quota and Resource Management:
+Scenario: Manage and enforce quotas related to the movement of artifacts.
+Implementation: Check current usage against defined quotas for moves. If the move would violate resource management policies, block the move and notify the user.
+Audit Logging and Monitoring:
+Scenario: Maintain a detailed log of all move attempts for compliance and monitoring.
+Implementation: Record details such as artifact name, user initiating the move, source and target repositories, timestamp, and the outcome of the move request. Use these logs for audits and continuous monitoring.
+Custom Notifications:
+Scenario: Notify relevant stakeholders when certain artifacts are moved.
+Implementation: Send notifications via email or messaging platforms (e.g., Slack) to inform team members or stakeholders about the move of specific artifacts, ensuring visibility and awareness.
+Dynamic Property Adjustment:
+Scenario: Automatically adjust properties or metadata of the artifact before moving based on specific criteria.
+Implementation: Implement mechanisms to update properties or metadata dynamically to reflect the context of the move, ensuring proper documentation and traceability.
+Network and Performance Optimization:
+Scenario: Optimize network and performance considerations during the move process.
+Implementation: Implement strategies such as scheduling moves during off-peak hours or adjusting transfer rates to minimize disruption and ensure efficient resource utilization.
+Error Handling and Notifications:
+Scenario: Handle errors gracefully and notify relevant parties if the move cannot proceed.
+Implementation: Implement error handling logic to respond to issues preventing the move. Notify relevant stakeholders about the nature of the error and possible corrective actions.
+Integration with External Systems:
+Scenario: Synchronize move activities with external systems to ensure data consistency.
+Implementation: Trigger webhooks or API calls to external systems to update or log the move activity, ensuring data consistency and enhanced validation across integrated platforms.
+Special Handling for Sensitive Artifacts:
+Scenario: Develop special handling processes for sensitive or critical artifacts.
+Implementation: Define criteria for sensitive artifacts and create custom handling logic to allow or restrict moving based on their status or type.
+By leveraging Before Move events, organizations can introduce robust control measures to safeguard their repositories, ensuring that artifact moves are executed according to organizational policies and best practices. This proactive approach enhances data integrity, security, and efficient artifact management within Artifactory.
+Before Build Info Save Events in Artifactory
+Description:
+Before Build Info Save events in Artifactory are triggered immediately before build information is saved in the Artifactory storage. These events allow users to implement custom logic, validations, and checks to ensure that build information is recorded in compliance with organizational policies and requirements. By leveraging Before Build Info Save events, organizations can prevent unauthorized or incorrect build data from being saved, enforce compliance standards, and maintain the integrity of their build records.
+Utilizing Before Build Info Save events helps ensure that all build information is thoroughly vetted and compliant, enhancing control, security, and operational efficiency within Artifactory.
+Sample Use Cases:
+User Permission Verification:
+Scenario: Ensure that only authorized users can save build information.
+Implementation: Verify the user's permissions and roles before allowing the build info to be saved. If the user lacks the necessary access rights, deny the save request and log the attempt for audit purposes.
+Compliance and Security Checks:
+Scenario: Enforce compliance and security policies before build information is saved.
+Implementation: Implement compliance and security checks to validate that the build information adheres to organizational policies and standards. If the request fails any checks, block the save and alert the relevant teams.
+Build Info Validation:
+Scenario: Ensure that the build info contains all required fields and data before saving.
+Implementation: Implement validation logic to check for the presence and correctness of mandatory fields and data within the build info. If any required information is missing or incorrect, block the save request and notify the user.
+Consistency and Integrity Checks:
+Scenario: Ensure that the build info being saved maintains the consistency and integrity of the data.
+Implementation: Perform checks to validate that the build info does not introduce inconsistencies or conflicts with existing records. If inconsistencies are found, prevent the save and prompt the user to correct the data.
+Rate Limiting and Throttling:
+Scenario: Control the rate at which build information can be saved to prevent abuse.
+Implementation: Implement rate-limiting mechanisms to monitor the frequency of build info save requests. If the rate exceeds allowed limits, block further requests and notify the user of the limit.
+Audit Logging and Monitoring:
+Scenario: Maintain a detailed log of all build info save attempts for compliance and monitoring.
+Implementation: Record details such as build name, version, user initiating the save, timestamp, and the outcome of the save request. Use these logs for audits, analysis, and continuous monitoring.
+Conditional Save Control:
+Scenario: Prevent the save of build information based on specific conditions or metadata.
+Implementation: Implement logic to inspect the metadata or context of the build info before allowing the save. If certain conditions are met (e.g., build marked as "experimental"), block the save and notify the user.
+Custom Notification and Alerts:
+Scenario: Notify relevant stakeholders when specific build information is being saved.
+Implementation: Send notifications via email or messaging platforms (e.g., Slack) to inform team members or stakeholders about the save of specific build information, ensuring visibility and awareness.
+Pre-Approval Workflows:
+Scenario: Require managerial or automated pre-approval before saving certain build info.
+Implementation: Implement a pre-approval workflow for specific types of builds or contexts. If approval is not granted, block the save and inform the requester of the decision.
+Integration with External Systems:
+Scenario: Synchronize build info save activities with external systems for additional validation or logging.
+Implementation: Trigger webhooks or API calls to external systems to validate or log the save activity before finalizing the request. This ensures data consistency and enhanced validation across integrated systems.
+Dynamic Metadata Evaluation:
+Scenario: Automatically evaluate and apply rules for dynamic metadata assignment.
+Implementation: Implement scripts to dynamically evaluate and assign metadata based on the build info context, ensuring the new records align with organizational standards and requirements.
+Content and Context Analysis:
+Scenario: Analyze build content and context to determine if the save should be allowed.
+Implementation: Implement content and context analysis to evaluate if saving the build info aligns with the intended use or lifecycle stage. If not, block the save and prompt the user with appropriate feedback.
+By leveraging Before Build Info Save events, organizations can introduce additional layers of control and validation to the build information saving process, ensuring that every build record saved in Artifactory is compliant, secure, and consistent with organizational policies. This proactive approach enhances data integrity, security, and efficient build management within Artifactory.
+After Delete Events in Artifactory
+Description:
+After Delete events in Artifactory are triggered immediately after an artifact is deleted from the repository. These events allow users to implement custom actions or workflows in response to the deletion of an artifact. By leveraging After Delete events, organizations can ensure that necessary follow-up actions are taken, such as logging, metadata cleanup, notifications, and integrations with external systems.
+Utilizing After Delete events helps maintain control and visibility over artifact deletions, ensuring comprehensive management and consistent practices following the removal of artifacts.
+Sample Use Cases:
+Audit Logging:
+Scenario: Maintain a comprehensive audit trail of all deletion events for compliance and monitoring.
+Implementation: Trigger a logging mechanism that records details of the deletion, including the artifact name, repository, user who initiated the deletion, and timestamp. Store this information in an audit log system for future reference and analysis.
+Notifications to Stakeholders:
+Scenario: Notify relevant teams or stakeholders when critical artifacts are deleted.
+Implementation: Send notifications via email or messaging platforms (e.g., Slack) to inform team members or stakeholders about the deletion, especially for critical or highly-regulated artifacts.
+Metadata Cleanup:
+Scenario: Remove or clean up related metadata and properties associated with the deleted artifact.
+Implementation: Automatically trigger a process to delete or archive metadata, properties, and any related records that are no longer needed after the artifact has been deleted.
+Integration with External Systems:
+Scenario: Synchronize deletion activities with external systems like CMDBs (Configuration Management Databases) or asset management tools.
+Implementation: Use the event to trigger webhooks or API calls to update external systems with details of the deleted artifact, ensuring data consistency and integration across platforms.
+Dependency and Impact Analysis:
+Scenario: Assess the impact of the deletion on other artifacts or systems and take appropriate actions.
+Implementation: Automatically trigger a process to analyze dependencies and inform relevant stakeholders if the deletion impacts other artifacts or systems that rely on the deleted artifact.
+Custom Tagging and Classification Updates:
+Scenario: Update or remove tags and classifications associated with the deleted artifact.
+Implementation: Implement mechanisms to automatically adjust or remove tags and classifications in response to the deletion, ensuring that repository organization and searchability remain accurate.
+Resource Management:
+Scenario: Reclaim or reallocate resources that were used by the deleted artifact.
+Implementation: Trigger processes to reclaim storage space, adjust quotas, or manage other resources that were previously allocated to the deleted artifact.
+Replication State Updates:
+Scenario: Update the replication state and synchronize deletion status with other Artifactory instances.
+Implementation: Ensure that the deletion event is propagated and reflected across replicated instances, maintaining consistency and synchronization.
+Quality Assurance and Testing:
+Scenario: Automatically trigger validation or testing processes to ensure that the deletion did not introduce issues.
+Implementation: Integrate with testing frameworks to run automated or manual tests on the repository and dependent systems to verify that everything functions correctly after the deletion.
+Version Control and Traceability:
+Scenario: Maintain traceability and document changes in version control systems in response to the deletion.
+Implementation: Update version control repositories, commit hashes, or logs to reflect the deletion event, ensuring full traceability and version consistency.
+Compliance Reporting and Archival:
+Scenario: Generate compliance reports and archive relevant information related to the deletion.
+Implementation: Automatically generate and store compliance reports detailing the deletion event, ensuring that all regulatory and legal requirements are met.
+Policy Enforcement:
+Scenario: Enforce specific organizational policies in response to artifact deletions.
+Implementation: Trigger policy enforcement mechanisms that might involve additional reviews, confirmations, or actions to ensure that the deletion aligns with organizational guidelines.
+By leveraging After Delete events, organizations can implement comprehensive and automated responses to artifact deletions, enhancing efficiency, security, and compliance within their artifact management workflows in Artifactory. This proactive approach ensures that all necessary follow-up actions are carried out consistently and thoroughly.
+Before Create Token Events in Access
+Description:
+Before Create Token events in the Access service are triggered immediately before a token is created. These events provide an opportunity for users to implement custom logic, validations, and checks to ensure the token creation process complies with organizational policies and security requirements. By leveraging Before Create Token events, organizations can prevent unauthorized or inappropriate token issuance, enforce security policies, and maintain strict control over access management.
+Utilizing Before Create Token events helps ensure that all token creation actions are thoroughly vetted, thereby enhancing control, security, and operational efficiency within the Access service.
+Sample Use Cases:
+User Permission Verification:
+Scenario: Ensure that only authorized users can create tokens.
+Implementation: Verify the user's permissions and roles before allowing the token to be created. If the user lacks the necessary access rights, deny the token creation request and log the attempt for audit purposes.
+Compliance and Security Checks:
+Scenario: Enforce compliance and security policies before tokens are issued.
+Implementation: Implement compliance and security checks to validate that the token creation action complies with organizational policies and security standards. If the request fails any checks, block the creation and alert the relevant teams.
+Token Scope and Expiration Validation:
+Scenario: Ensure that tokens are created with appropriate scopes and expiration times.
+Implementation: Validate the requested scopes and expiration times against organizational policies. Adjust the parameters or block the creation if the scope is too broad or the expiration time is too long.
+Rate Limiting and Throttling:
+Scenario: Control the frequency at which tokens can be created to prevent abuse.
+Implementation: Implement rate-limiting mechanisms to monitor the frequency of token creation requests. If the rate exceeds allowed limits, block further requests and notify the user of the limit.
+Audit Logging and Monitoring:
+Scenario: Maintain a detailed log of all token creation attempts for compliance and monitoring purposes.
+Implementation: Record details such as the token requester, requested scopes, expiration time, timestamp, and the outcome of the token creation request. Use these logs for audits, analysis, and continuous monitoring.
+Conditional Token Control:
+Scenario: Prevent the creation of tokens based on specific conditions or attributes.
+Implementation: Implement logic to inspect the user's attributes or the context of the token request before allowing the creation. If certain conditions are met (e.g., user in a specific group), block the token creation and notify the user.
+Custom Notifications and Alerts:
+Scenario: Notify relevant stakeholders when specific tokens are created.
+Implementation: Send notifications via email or messaging platforms (e.g., Slack) to inform team members or stakeholders about the creation of specific tokens, ensuring visibility and awareness.
+Pre-Approval Workflows:
+Scenario: Require managerial or automated pre-approval before issuing certain tokens.
+Implementation: Implement a pre-approval workflow for specific types of tokens or contexts. If approval is not granted, block the token creation and inform the requester of the decision.
+Integration with External Systems:
+Scenario: Synchronize token creation activities with external systems for additional validation or logging.
+Implementation: Trigger webhooks or API calls to external systems to validate or log token creation activities before finalizing the request. This ensures data consistency and enhanced validation across integrated systems.
+Dynamic Metadata Evaluation:
+Scenario: Automatically evaluate and apply rules for dynamic metadata assignment to tokens.
+Implementation: Implement scripts to dynamically evaluate and assign metadata based on the token request context, ensuring the new tokens align with organizational standards and requirements.
+Context Analysis:
+Scenario: Analyze the context of the token request to determine if creation should be allowed.
+Implementation: Implement context analysis to evaluate if creating the token aligns with the intended use or security policies. If not, block the token creation and prompt the user with appropriate feedback.
+Resource Allocation Checks:
+Scenario: Ensure that token creation does not exceed resource limits or quotas.
+Implementation: Implement checks to verify that the creation of new tokens does not violate resource allocation policies or quotas. If limits are exceeded, block the request and notify the user.
+By leveraging Before Create Token events, organizations can introduce additional layers of control and validation to the token creation process, ensuring that every token created in the Access service is compliant, secure, and consistent with organizational policies. This proactive approach enhances data integrity, security, and efficient access management within the Access service.
+Before Revoke Token Events in Access
+Description:
+Before Revoke Token events in the Access service are triggered immediately before a token is revoked. These events provide an opportunity for users to implement custom logic, validations, and checks to ensure that token revocation is appropriate and complies with organizational policies. By leveraging Before Revoke Token events, organizations can prevent unauthorized or inappropriate token revocation, enforce security policies, and maintain control over access management.
+Utilizing Before Revoke Token events helps ensure that all token revocation actions are thoroughly vetted, enhancing control, security, and operational efficiency within the Access service.
+Sample Use Cases:
+User Permission Verification:
+Scenario: Ensure that only authorized users can revoke tokens.
+Implementation: Verify the user's permissions and roles before allowing the token to be revoked. If the user lacks the necessary access rights, deny the revocation request and log the attempt for audit purposes.
+Compliance and Security Checks:
+Scenario: Enforce compliance and security policies before tokens are revoked.
+Implementation: Implement compliance and security checks to validate that the token revocation action complies with organizational policies and security standards. If the request fails any checks, block the revocation and alert the relevant teams.
+Token Usage and Dependency Analysis:
+Scenario: Ensure that revoking the token does not adversely affect dependent services or users.
+Implementation: Perform an analysis to check if the token is currently in use or if its revocation will disrupt critical services. If dependencies are found, block the revocation and notify the user.
+Rate Limiting and Throttling:
+Scenario: Control the rate at which tokens can be revoked to prevent abuse.
+Implementation: Implement rate-limiting mechanisms to monitor the frequency of token revocation requests. If the rate exceeds allowed limits, block further requests and notify the user of the limit.
+Audit Logging and Monitoring:
+Scenario: Maintain a detailed log of all token revocation attempts for compliance and monitoring purposes.
+Implementation: Record details such as the token being revoked, the user initiating the request, timestamp, and the outcome of the revocation request. Use these logs for audits, analysis, and continuous monitoring.
+Conditional Token Revocation Control:
+Scenario: Prevent the revocation of tokens based on specific conditions or attributes.
+Implementation: Implement logic to inspect the token's attributes or the context of the revocation request before allowing the revocation. If certain conditions are met (e.g., token is associated with critical services), block the revocation and notify the user.
+Custom Notifications and Alerts:
+Scenario: Notify relevant stakeholders when specific tokens are revoked.
+Implementation: Send notifications via email or messaging platforms (e.g., Slack) to inform team members or stakeholders about the revocation of specific tokens, ensuring visibility and awareness.
+Pre-Approval Workflows:
+Scenario: Require managerial or automated pre-approval before revoking certain tokens.
+Implementation: Implement a pre-approval workflow for specific types of tokens or contexts. If approval is not granted, block the revocation and inform the requester of the decision.
+Integration with External Systems:
+Scenario: Synchronize token revocation activities with external systems for additional validation or logging.
+Implementation: Trigger webhooks or API calls to external systems to validate or log token revocation activities before finalizing the request. This ensures data consistency and enhanced validation across integrated systems.
+Dynamic Metadata Evaluation:
+Scenario: Automatically evaluate and apply rules for dynamic metadata checks before revocation.
+Implementation: Implement scripts to dynamically evaluate and check metadata based on the token's context, ensuring the revocation aligns with organizational standards and requirements.
+Context Analysis:
+Scenario: Analyze the context of the revocation request to determine if it should be allowed.
+Implementation: Implement context analysis to evaluate if revoking the token aligns with the intended use or security policies. If not, block the revocation and prompt the user with appropriate feedback.
+Impact Assessment:
+Scenario: Assess the potential impact of token revocation on ongoing operations.
+Implementation: Perform an impact assessment to understand how revoking the token might affect current operations and dependencies. If the impact is significant, block the revocation and notify relevant parties.
+By leveraging Before Revoke Token events, organizations can introduce additional layers of control and validation to the token revocation process, ensuring that every token revocation in the Access service is compliant, secure, and consistent with organizational policies. This proactive approach enhances data integrity, security, and efficient access management within the Access service.
+
+
+
+
+Scheduled
+The Scheduled Worker type in Artifactory is designed to perform automated tasks at specified intervals. This worker uses an HTTP client to make calls to internal or external endpoints, allowing it to execute a variety of tasks such as system health checks, data synchronization, or triggering other automated processes based on the responses received.
+This sample worker performs a readiness check on the Artifactory instance by making a GET request to the system readiness API endpoint. Depending on the response, it logs success or warning messages if the request is successful, and error messages if the request fails. This helps in monitoring the health status of the Artifactory instance and taking necessary actions based on the system's readiness status.
+Sample Use Cases
+System Health Monitoring:
+Scenario: Regularly check the health of the Artifactory service to ensure it is running smoothly.
+Implementation: The worker makes periodic GET requests to the /artifactory/api/v1/system/readiness endpoint to check the system readiness status. It logs the results, providing visibility into the health of the Artifactory instance. Alerts can be configured based on these logs to notify administrators of any issues.
+Dependency Management:
+Scenario: Ensure that dependent services are up and running before performing critical operations.
+Implementation: Before initiating large-scale operations such as batch artifact uploads or downloads, the worker can verify that the Artifactory system is ready. This prevents operations from failing due to system unavailability.
+Automated Scaling Decisions:
+Scenario: Determine when to scale resources up or down based on system readiness.
+Implementation: Use the scheduled worker to periodically check the readiness of various Artifactory instances. Based on the collective status, automated decisions can be made to scale the infrastructure up or down, optimizing resource usage and cost.
+Compliance and Audit Trails:
+Scenario: Maintain logs for compliance and auditing purposes.
+Implementation: Regular readiness checks can be instrumental in audits and compliance reports. The logs generated by these checks provide an audit trail that demonstrates the proactive monitoring of the system's health over time.
+Disaster Recovery Preparedness:
+Scenario: Ensure disaster recovery systems are ready and operational.
+Implementation: Periodically check the readiness of primary and backup Artifactory instances. This ensures that in the event of a disaster, the backup systems are ready to take over, minimizing downtime.
+External API Integrations:
+Scenario: Monitor the readiness of external systems or services that integrate with Artifactory.
+Implementation: The worker can make GET requests to the readiness endpoints of external systems, ensuring they are operational before attempting to sync data or perform integrations.
+
+This worker can be scheduled to run at regular intervals using Artifactory's scheduling capabilities, ensuring continuous monitoring and proactive management of your Artifactory instances.
+
+
+Http
+
+HTTP-Triggered
+Description
+This HTTP-Triggered Worker type allows you to initiate a task by sending an HTTP request to the worker. The example provided is designed to fetch the number of repositories in Artifactory, categorized by repository type. It uses an HTTP client to make calls to the JFrog REST API, processes the returned data, and structures it in a summary format.
+By leveraging this HTTP-triggered worker, you can get real-time statistics of your Artifactory repositories, useful for monitoring, reporting, or integrating with other tools.
+Sample Use Cases
+Monitoring and Reporting:
+Scenario: Generate a report on the number and types of repositories available in Artifactory.
+Implementation: Trigger the worker via an HTTP request to fetch and return the count of repositories categorized by type. Use this data to generate inventory reports for stakeholders or for auditing purposes.
+Integration with CI/CD Pipelines:
+Scenario: Retrieve repository metrics as part of a CI/CD pipeline to verify the repository structure before proceeding with further steps.
+Implementation: Make an HTTP request to this worker as a pipeline step to get a summary of repositories. Verify the repository structure and ensure necessary repositories are in place, stopping the pipeline if requirements are not met.
+Automated Alerts and Dashboards:
+Scenario: Use real-time data to power dashboards or alerting systems.
+Implementation: Regularly trigger the worker via HTTP requests from a monitoring system. Use the returned data to update dashboards or trigger alerts if the number of repositories exceeds or drops below certain thresholds.
+Governance and Compliance:
+Scenario: Ensure compliance with organizational policies regarding repository management.
+Implementation: Trigger the worker regularly to verify that the repositories align with governance policies, such as naming conventions or number limits.
+On-Demand Repository Audits:
+Scenario: Perform an on-demand audit of repository types and counts.
+Implementation: Trigger the worker via an HTTP request during an audit process to get a current snapshot of repository data.
+
+How to Use
+HTTP Request:
+Trigger the worker by sending an HTTP request to the worker's endpoint. The payload can be empty as the worker does not require any incoming data to perform its task.
+Response Handling:
+The worker responds with a CustomResponse object. If successful, it provides a record of repository types and their counts. If an error occurs, it returns an error message detailing the issue.
+Integration Example:
+Integrate this worker into your monitoring system, CI/CD pipelines, or dashboards to retrieve repository statistics on-demand or on a scheduled basis.
+
+
