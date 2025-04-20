@@ -16,10 +16,10 @@
 # #      buildOn:
 # #        commit: true
 
-# pipelines:
+pipelines:
              
-#   - name: testing1
-#     steps:
+  - name: testingVersion
+    steps:
 #       # - name: test_step
 #       #   type: Bash
 # #         configuration:
@@ -66,19 +66,20 @@
 # #           onSuccess:
 # #             - pushd $res_resource_pipelines_resourcePath
 # #             - ls
-# #       - name: myStepTest
-# #         type: Bash
-# #         configuration:
-# #          inputSteps:
-# #            - name: myStep1
-# # #          nodePool: u20dynamic
-# #          integrations:
-# #            - name: github_neha
-# #            # - name: genericInt
-# #         execution:
-# #           onExecute:
-# #             - echo "hi"
-# #             - restore_run_files bar.txt testResults
+      - name: myStepTestVersion
+        type: Bash
+#         configuration:
+#          inputSteps:
+#            - name: myStep1
+# #          nodePool: u20dynamic
+#          integrations:
+#            - name: github_neha
+           # - name: genericInt
+        execution:
+          onExecute:
+            - | 
+               local rt_version=$(curl -s "https://versions.jfrog.info/latestVersions" | jq -r '.artifactory.official_release'); echo "$rt_version"
+#             - restore_run_files bar.txt testResults
 #   - name: testing2
 #     steps:
 #       - name: myStep2
