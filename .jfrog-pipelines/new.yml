@@ -1,16 +1,18 @@
-resources:
- - name: resource_pipelines
-   type: GitRepo
-   configuration:
-     gitProvider: github_neha #rename to your integration name
-     path: neha-mishraa/pipelines #rename to your repo name 
+# resources:
+#  - name: resource_pipelines
+#    type: GitRepo
+#    configuration:
+#      gitProvider: github_neha #rename to your integration name
+#      path: neha-mishraa/pipelines #rename to your repo name 
 pipelines:
-  - name: test
+  - name: testVersion
     type: Bash
     configuration:
-      - inputResources:
-        - name: resource_pipelines
+      # - inputResources:
+      #   - name: resource_pipelines
     execution:
     - onExecute:
-      - pushd $res_resource_pipelines_resourcePath
-      - ./script.sh # copy contents for script.sh file
+      # - pushd $res_resource_pipelines_resourcePath
+      - | 
+         local rt_version=$(curl -s "https://versions.jfrog.info/latestVersions" | jq -r '.artifactory.official_release'); echo "$rt_version"
+      # - ./script.sh # copy contents for script.sh file
