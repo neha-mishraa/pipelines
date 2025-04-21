@@ -18,7 +18,7 @@
 
 pipelines:
              
-  - name: testingVersion
+  - name: testingVersion123
     steps:
 #       # - name: test_step
 #       #   type: Bash
